@@ -1,0 +1,13 @@
+{
+  "Server": "tardis",
+  "Database": "dms",
+  "Destinations": [
+    "D:/BackupTest"
+  ],
+  "SaveToRemovable": true,
+  "UseSchedule": false,
+  "ScheduledTimes": [
+    "02:00",
+    "14:00"
+  ]
+}

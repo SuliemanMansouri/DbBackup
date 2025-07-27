@@ -1,6 +1,5 @@
 using DbBackup;
 using Microsoft.Data.SqlClient;
-using System.Diagnostics;
 using System.IO.Compression;
 using System.Text.Json;
 
@@ -14,6 +13,8 @@ namespace BbBackup
         private System.Windows.Forms.Timer scheduleTimer;
         private HashSet<string> triggeredTimes = new HashSet<string>();
         private ContextMenuStrip trayMenu;
+        private ToolStripMenuItem removableStatusMenuItem;
+        private ToolStripMenuItem scheduleStatusMenuItem;
 
         public Backup()
         {
@@ -29,12 +30,8 @@ namespace BbBackup
             // Start minimized
             WindowState = FormWindowState.Minimized;
 
-            // Load config and set checkbox state
+            // Load config
             currentConfig = LoadConfig();
-            UseRemovalbleDriveCheckBox.Checked = currentConfig.SaveToRemovable;
-            UseRemovalbleDriveCheckBox.CheckedChanged += UseRemovalbleDriveCheckBox_CheckedChanged;
-            UseScheduleCheckBox.Checked = currentConfig.UseSchedule;
-            UseScheduleCheckBox.CheckedChanged += UseScheduleCheckBox_CheckedChanged;
 
             // Setup schedule timer
             scheduleTimer = new System.Windows.Forms.Timer();
@@ -49,9 +46,15 @@ namespace BbBackup
             backupMenuItem.Click += (s, e) => BackpButton_Click(this, EventArgs.Empty);
             var exitMenuItem = new ToolStripMenuItem("≈€·«ﬁ «·»—‰«„Ã");
             exitMenuItem.Click += (s, e) => ExitApp();
+            removableStatusMenuItem = new ToolStripMenuItem("«·‰”Œ ≈·Ï ÊÕœ… Œ«—ÃÌ…") { Enabled = false };
+            scheduleStatusMenuItem = new ToolStripMenuItem("«·ÃœÊ·… «· ·ﬁ«∆Ì…") { Enabled = false };
             trayMenu.Items.Add(backupMenuItem);
             trayMenu.Items.Add(exitMenuItem);
+            trayMenu.Items.Add(new ToolStripSeparator());
+            trayMenu.Items.Add(removableStatusMenuItem);
+            trayMenu.Items.Add(scheduleStatusMenuItem);
             trayIcon.ContextMenuStrip = trayMenu;
+            trayMenu.Opening += TrayMenu_Opening;
         }
 
         private void ScheduleTimer_Tick(object sender, EventArgs e)
@@ -68,35 +71,6 @@ namespace BbBackup
             // Reset triggeredTimes at midnight
             if (now == "00:00")
                 triggeredTimes.Clear();
-        }
-
-        private void UseRemovalbleDriveCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            currentConfig.SaveToRemovable = UseRemovalbleDriveCheckBox.Checked;
-            string configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "backupconfig.json");
-            var json = JsonSerializer.Serialize(currentConfig, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText(configPath, json);
-        }
-
-        private void UseScheduleCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            currentConfig.UseSchedule = UseScheduleCheckBox.Checked;
-            string configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "backupconfig.json");
-            var json = JsonSerializer.Serialize(currentConfig, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText(configPath, json);
-            if (currentConfig.UseSchedule)
-            {
-                scheduleTimer.Start();
-                try
-                {
-                    Process.Start(new ProcessStartInfo(configPath) { UseShellExecute = true });
-                }
-                catch { }
-            }
-            else
-            {
-                scheduleTimer.Stop();
-            }
         }
 
         protected override void OnResize(EventArgs e)
@@ -204,10 +178,18 @@ namespace BbBackup
             // Already handled in constructor
         }
 
-        private void HelpButton_Click(object sender, EventArgs e)
+        
+        private void OpenEditorButton_Click(object sender, EventArgs e)
         {
-            var howToForm = new HowToUseTheApp();
-            howToForm.ShowDialog();
+            var editor = new Editor();
+            editor.ShowDialog();
+        }
+
+        private void TrayMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            var config = LoadConfig();
+            removableStatusMenuItem.Checked = config.SaveToRemovable;
+            scheduleStatusMenuItem.Checked = config.UseSchedule;
         }
     }
 }

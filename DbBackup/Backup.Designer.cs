@@ -30,10 +30,8 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Backup));
             BackpButton = new Button();
-            UseRemovalbleDriveCheckBox = new CheckBox();
             tableLayoutPanel1 = new TableLayoutPanel();
-            UseScheduleCheckBox = new CheckBox();
-            HelpButton = new Button();
+            OpenEditorButton = new Button();
             tableLayoutPanel1.SuspendLayout();
             SuspendLayout();
             // 
@@ -49,64 +47,37 @@
             BackpButton.UseVisualStyleBackColor = true;
             BackpButton.Click += BackpButton_Click;
             // 
-            // UseRemovalbleDriveCheckBox
-            // 
-            UseRemovalbleDriveCheckBox.AutoSize = true;
-            UseRemovalbleDriveCheckBox.Dock = DockStyle.Fill;
-            UseRemovalbleDriveCheckBox.Location = new Point(258, 4);
-            UseRemovalbleDriveCheckBox.Margin = new Padding(4);
-            UseRemovalbleDriveCheckBox.Name = "UseRemovalbleDriveCheckBox";
-            UseRemovalbleDriveCheckBox.Size = new Size(246, 39);
-            UseRemovalbleDriveCheckBox.TabIndex = 1;
-            UseRemovalbleDriveCheckBox.Text = "انسخ إلى وحدة تخزين قابلة للإزالة";
-            UseRemovalbleDriveCheckBox.UseVisualStyleBackColor = true;
-            // 
             // tableLayoutPanel1
             // 
             tableLayoutPanel1.ColumnCount = 2;
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            tableLayoutPanel1.Controls.Add(UseRemovalbleDriveCheckBox, 0, 0);
-            tableLayoutPanel1.Controls.Add(UseScheduleCheckBox, 1, 0);
-            tableLayoutPanel1.Controls.Add(HelpButton, 0, 1);
+            tableLayoutPanel1.Controls.Add(OpenEditorButton, 1, 0);
             tableLayoutPanel1.Dock = DockStyle.Top;
             tableLayoutPanel1.Location = new Point(0, 75);
             tableLayoutPanel1.Margin = new Padding(4);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
-            tableLayoutPanel1.RowCount = 2;
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 42F));
-            tableLayoutPanel1.Size = new Size(508, 89);
+            tableLayoutPanel1.RowCount = 1;
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tableLayoutPanel1.Size = new Size(508, 42);
             tableLayoutPanel1.TabIndex = 2;
             // 
-            // UseScheduleCheckBox
+            // OpenEditorButton
             // 
-            UseScheduleCheckBox.AutoSize = true;
-            UseScheduleCheckBox.Dock = DockStyle.Fill;
-            UseScheduleCheckBox.Location = new Point(4, 4);
-            UseScheduleCheckBox.Margin = new Padding(4);
-            UseScheduleCheckBox.Name = "UseScheduleCheckBox";
-            UseScheduleCheckBox.Size = new Size(246, 39);
-            UseScheduleCheckBox.TabIndex = 2;
-            UseScheduleCheckBox.Text = "استخدم الجدول الزمني";
-            UseScheduleCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // HelpButton
-            // 
-            HelpButton.Dock = DockStyle.Fill;
-            HelpButton.Location = new Point(257, 50);
-            HelpButton.Name = "HelpButton";
-            HelpButton.Size = new Size(248, 36);
-            HelpButton.TabIndex = 3;
-            HelpButton.Text = "كيف تستعمل البرنامج";
-            HelpButton.UseVisualStyleBackColor = true;
-            HelpButton.Click += HelpButton_Click;
+            OpenEditorButton.Dock = DockStyle.Fill;
+            OpenEditorButton.Location = new Point(3, 3);
+            OpenEditorButton.Name = "OpenEditorButton";
+            OpenEditorButton.Size = new Size(248, 36);
+            OpenEditorButton.TabIndex = 4;
+            OpenEditorButton.Text = "الإعدادات";
+            OpenEditorButton.UseVisualStyleBackColor = true;
+            OpenEditorButton.Click += OpenEditorButton_Click;
             // 
             // Backup
             // 
             AutoScaleDimensions = new SizeF(9F, 21F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(508, 166);
+            ClientSize = new Size(508, 117);
             Controls.Add(tableLayoutPanel1);
             Controls.Add(BackpButton);
             Font = new Font("Segoe UI", 12F);
@@ -122,16 +93,13 @@
             Text = "النسخ الاحتياطي لقاعدة البيانات";
             Load += Form1_Load;
             tableLayoutPanel1.ResumeLayout(false);
-            tableLayoutPanel1.PerformLayout();
             ResumeLayout(false);
         }
 
         #endregion
 
         private Button BackpButton;
-        private CheckBox UseRemovalbleDriveCheckBox;
         private TableLayoutPanel tableLayoutPanel1;
-        private CheckBox UseScheduleCheckBox;
-        private Button HelpButton;
+        private Button OpenEditorButton;
     }
 }

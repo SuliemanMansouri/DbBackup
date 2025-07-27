@@ -1,7 +1,8 @@
+using BbBackup;
 using System;
 using System.Threading;
 
-namespace BbBackup
+namespace DbBackup
 {
     internal static class Program
     {

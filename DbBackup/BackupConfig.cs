@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace BbBackup
+namespace DbBackup
 {
     public class BackupConfig
     {

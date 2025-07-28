@@ -56,105 +56,93 @@
             // 
             // txtServer
             // 
-            txtServer.Location = new Point(63, 4);
-            txtServer.Margin = new Padding(4);
+            txtServer.Location = new Point(50, 3);
             txtServer.Name = "txtServer";
-            txtServer.Size = new Size(256, 29);
+            txtServer.Size = new Size(200, 23);
             txtServer.TabIndex = 1;
             // 
             // txtDatabase
             // 
-            txtDatabase.Location = new Point(63, 41);
-            txtDatabase.Margin = new Padding(4);
+            txtDatabase.Location = new Point(50, 32);
             txtDatabase.Name = "txtDatabase";
-            txtDatabase.Size = new Size(256, 29);
+            txtDatabase.Size = new Size(200, 23);
             txtDatabase.TabIndex = 3;
             // 
             // lstDestinations
             // 
             lstDestinations.Dock = DockStyle.Top;
-            lstDestinations.Location = new Point(63, 78);
-            lstDestinations.Margin = new Padding(4);
+            lstDestinations.Location = new Point(50, 61);
             lstDestinations.Name = "lstDestinations";
-            lstDestinations.Size = new Size(256, 109);
+            lstDestinations.Size = new Size(200, 79);
             lstDestinations.TabIndex = 5;
             // 
             // btnAddDestination
             // 
-            btnAddDestination.Location = new Point(4, 4);
-            btnAddDestination.Margin = new Padding(4);
+            btnAddDestination.Location = new Point(3, 3);
             btnAddDestination.Name = "btnAddDestination";
-            btnAddDestination.Size = new Size(39, 32);
+            btnAddDestination.Size = new Size(30, 23);
             btnAddDestination.TabIndex = 6;
             btnAddDestination.Text = "+";
             // 
             // btnRemoveDestination
             // 
-            btnRemoveDestination.Location = new Point(4, 44);
-            btnRemoveDestination.Margin = new Padding(4);
+            btnRemoveDestination.Location = new Point(3, 32);
             btnRemoveDestination.Name = "btnRemoveDestination";
-            btnRemoveDestination.Size = new Size(39, 32);
+            btnRemoveDestination.Size = new Size(30, 23);
             btnRemoveDestination.TabIndex = 7;
             btnRemoveDestination.Text = "-";
             // 
             // chkSaveToRemovable
             // 
-            chkSaveToRemovable.Location = new Point(185, 195);
-            chkSaveToRemovable.Margin = new Padding(4);
+            chkSaveToRemovable.Location = new Point(146, 146);
             chkSaveToRemovable.Name = "chkSaveToRemovable";
-            chkSaveToRemovable.Size = new Size(134, 34);
+            chkSaveToRemovable.Size = new Size(104, 24);
             chkSaveToRemovable.TabIndex = 9;
             // 
             // chkUseSchedule
             // 
-            chkUseSchedule.Location = new Point(185, 237);
-            chkUseSchedule.Margin = new Padding(4);
+            chkUseSchedule.Location = new Point(146, 176);
             chkUseSchedule.Name = "chkUseSchedule";
-            chkUseSchedule.Size = new Size(134, 34);
+            chkUseSchedule.Size = new Size(104, 24);
             chkUseSchedule.TabIndex = 11;
             // 
             // lstScheduledTimes
             // 
             lstScheduledTimes.Dock = DockStyle.Top;
-            lstScheduledTimes.Location = new Point(63, 279);
-            lstScheduledTimes.Margin = new Padding(4);
+            lstScheduledTimes.Location = new Point(50, 206);
             lstScheduledTimes.Name = "lstScheduledTimes";
-            lstScheduledTimes.Size = new Size(256, 130);
+            lstScheduledTimes.Size = new Size(200, 94);
             lstScheduledTimes.TabIndex = 13;
             // 
             // btnAddTime
             // 
-            btnAddTime.Location = new Point(4, 4);
-            btnAddTime.Margin = new Padding(4);
+            btnAddTime.Location = new Point(3, 3);
             btnAddTime.Name = "btnAddTime";
-            btnAddTime.Size = new Size(39, 32);
+            btnAddTime.Size = new Size(30, 23);
             btnAddTime.TabIndex = 14;
             btnAddTime.Text = "+";
             // 
             // btnRemoveTime
             // 
-            btnRemoveTime.Location = new Point(4, 44);
-            btnRemoveTime.Margin = new Padding(4);
+            btnRemoveTime.Location = new Point(3, 32);
             btnRemoveTime.Name = "btnRemoveTime";
-            btnRemoveTime.Size = new Size(39, 32);
+            btnRemoveTime.Size = new Size(30, 23);
             btnRemoveTime.TabIndex = 15;
             btnRemoveTime.Text = "-";
             // 
             // btnLoad
             // 
-            btnLoad.Location = new Point(393, 417);
-            btnLoad.Margin = new Padding(4);
+            btnLoad.Location = new Point(306, 306);
             btnLoad.Name = "btnLoad";
-            btnLoad.Size = new Size(103, 42);
+            btnLoad.Size = new Size(80, 30);
             btnLoad.TabIndex = 16;
             btnLoad.Text = "فتح";
             // 
             // btnSave
             // 
-            btnSave.Location = new Point(216, 417);
-            btnSave.Margin = new Padding(4);
+            btnSave.Location = new Point(170, 306);
             btnSave.Name = "btnSave";
-            btnSave.Size = new Size(103, 42);
+            btnSave.Size = new Size(80, 30);
             btnSave.TabIndex = 17;
             btnSave.Text = "حفظ";
             // 
@@ -162,10 +150,9 @@
             // 
             lblServer.AutoSize = true;
             lblServer.Dock = DockStyle.Fill;
-            lblServer.Location = new Point(327, 0);
-            lblServer.Margin = new Padding(4, 0, 4, 0);
+            lblServer.Location = new Point(256, 0);
             lblServer.Name = "lblServer";
-            lblServer.Size = new Size(169, 37);
+            lblServer.Size = new Size(130, 29);
             lblServer.TabIndex = 0;
             lblServer.Text = "الخادم:";
             lblServer.TextAlign = ContentAlignment.MiddleLeft;
@@ -174,10 +161,9 @@
             // 
             lblDatabase.AutoSize = true;
             lblDatabase.Dock = DockStyle.Fill;
-            lblDatabase.Location = new Point(327, 37);
-            lblDatabase.Margin = new Padding(4, 0, 4, 0);
+            lblDatabase.Location = new Point(256, 29);
             lblDatabase.Name = "lblDatabase";
-            lblDatabase.Size = new Size(169, 37);
+            lblDatabase.Size = new Size(130, 29);
             lblDatabase.TabIndex = 2;
             lblDatabase.Text = "قاعدة البيانات:";
             lblDatabase.TextAlign = ContentAlignment.MiddleLeft;
@@ -186,10 +172,9 @@
             // 
             lblDestinations.AutoSize = true;
             lblDestinations.Dock = DockStyle.Fill;
-            lblDestinations.Location = new Point(327, 74);
-            lblDestinations.Margin = new Padding(4, 0, 4, 0);
+            lblDestinations.Location = new Point(256, 58);
             lblDestinations.Name = "lblDestinations";
-            lblDestinations.Size = new Size(169, 117);
+            lblDestinations.Size = new Size(130, 85);
             lblDestinations.TabIndex = 4;
             lblDestinations.Text = "مجلدات النسخ الاحتياطي:";
             lblDestinations.TextAlign = ContentAlignment.MiddleLeft;
@@ -198,10 +183,9 @@
             // 
             lblSaveToRemovable.AutoSize = true;
             lblSaveToRemovable.Dock = DockStyle.Fill;
-            lblSaveToRemovable.Location = new Point(327, 191);
-            lblSaveToRemovable.Margin = new Padding(4, 0, 4, 0);
+            lblSaveToRemovable.Location = new Point(256, 143);
             lblSaveToRemovable.Name = "lblSaveToRemovable";
-            lblSaveToRemovable.Size = new Size(169, 42);
+            lblSaveToRemovable.Size = new Size(130, 30);
             lblSaveToRemovable.TabIndex = 8;
             lblSaveToRemovable.Text = "احفظ على وحدة خارجية:";
             lblSaveToRemovable.TextAlign = ContentAlignment.MiddleLeft;
@@ -210,10 +194,9 @@
             // 
             lblUseSchedule.AutoSize = true;
             lblUseSchedule.Dock = DockStyle.Fill;
-            lblUseSchedule.Location = new Point(327, 233);
-            lblUseSchedule.Margin = new Padding(4, 0, 4, 0);
+            lblUseSchedule.Location = new Point(256, 173);
             lblUseSchedule.Name = "lblUseSchedule";
-            lblUseSchedule.Size = new Size(169, 42);
+            lblUseSchedule.Size = new Size(130, 30);
             lblUseSchedule.TabIndex = 10;
             lblUseSchedule.Text = "استخدم الجدولة:";
             lblUseSchedule.TextAlign = ContentAlignment.MiddleLeft;
@@ -222,10 +205,9 @@
             // 
             lblScheduledTimes.AutoSize = true;
             lblScheduledTimes.Dock = DockStyle.Fill;
-            lblScheduledTimes.Location = new Point(327, 275);
-            lblScheduledTimes.Margin = new Padding(4, 0, 4, 0);
+            lblScheduledTimes.Location = new Point(256, 203);
             lblScheduledTimes.Name = "lblScheduledTimes";
-            lblScheduledTimes.Size = new Size(169, 138);
+            lblScheduledTimes.Size = new Size(130, 100);
             lblScheduledTimes.TabIndex = 12;
             lblScheduledTimes.Text = "أوقات النسخ المجدول:";
             lblScheduledTimes.TextAlign = ContentAlignment.MiddleLeft;
@@ -254,7 +236,6 @@
             tableLayoutPanel1.Controls.Add(tableLayoutPanel3, 2, 5);
             tableLayoutPanel1.Dock = DockStyle.Fill;
             tableLayoutPanel1.Location = new Point(0, 0);
-            tableLayoutPanel1.Margin = new Padding(4);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 7;
             tableLayoutPanel1.RowStyles.Add(new RowStyle());
@@ -264,7 +245,7 @@
             tableLayoutPanel1.RowStyles.Add(new RowStyle());
             tableLayoutPanel1.RowStyles.Add(new RowStyle());
             tableLayoutPanel1.RowStyles.Add(new RowStyle());
-            tableLayoutPanel1.Size = new Size(500, 465);
+            tableLayoutPanel1.Size = new Size(389, 346);
             tableLayoutPanel1.TabIndex = 18;
             // 
             // tableLayoutPanel2
@@ -274,13 +255,12 @@
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             tableLayoutPanel2.Controls.Add(btnAddDestination, 0, 0);
             tableLayoutPanel2.Controls.Add(btnRemoveDestination, 0, 1);
-            tableLayoutPanel2.Location = new Point(8, 78);
-            tableLayoutPanel2.Margin = new Padding(4);
+            tableLayoutPanel2.Location = new Point(8, 61);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
             tableLayoutPanel2.RowCount = 2;
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel2.Size = new Size(47, 80);
+            tableLayoutPanel2.Size = new Size(36, 58);
             tableLayoutPanel2.TabIndex = 6;
             // 
             // tableLayoutPanel3
@@ -290,24 +270,21 @@
             tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle());
             tableLayoutPanel3.Controls.Add(btnAddTime, 0, 0);
             tableLayoutPanel3.Controls.Add(btnRemoveTime, 0, 1);
-            tableLayoutPanel3.Location = new Point(8, 279);
-            tableLayoutPanel3.Margin = new Padding(4);
+            tableLayoutPanel3.Location = new Point(8, 206);
             tableLayoutPanel3.Name = "tableLayoutPanel3";
             tableLayoutPanel3.RowCount = 2;
             tableLayoutPanel3.RowStyles.Add(new RowStyle());
             tableLayoutPanel3.RowStyles.Add(new RowStyle());
-            tableLayoutPanel3.Size = new Size(47, 80);
+            tableLayoutPanel3.Size = new Size(36, 58);
             tableLayoutPanel3.TabIndex = 14;
             // 
             // Editor
             // 
-            AutoScaleDimensions = new SizeF(9F, 21F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(500, 465);
+            ClientSize = new Size(389, 346);
             Controls.Add(tableLayoutPanel1);
-            Font = new Font("Segoe UI", 12F);
-            FormBorderStyle = FormBorderStyle.Fixed3D;
-            Margin = new Padding(4);
+            Font = new Font("Segoe UI", 9F);
             Name = "Editor";
             RightToLeft = RightToLeft.Yes;
             RightToLeftLayout = true;

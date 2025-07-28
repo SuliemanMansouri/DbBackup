@@ -85,6 +85,12 @@ namespace DbBackup
                 lstScheduledTimes.Items.Remove(lstScheduledTimes.SelectedItem);
         }
 
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+            this.AutoScaleMode = AutoScaleMode.Dpi;
+        }
+
         private void Editor_Load(object sender, EventArgs e)
         {
             BtnLoad_Click(sender, e);

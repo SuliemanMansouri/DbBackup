@@ -134,8 +134,12 @@ namespace BbBackup
             try
             {
                 var config = LoadConfig();
+                if (config.Destinations == null || config.Destinations.Count == 0)
+                    throw new InvalidOperationException("No backup destinations configured.");
+                string firstDest = config.Destinations[0];
+                Directory.CreateDirectory(firstDest); // Ensure folder exists
                 string backupFile = $"{config.Database}_{DateTime.Now:yyyyMMddHHmmss}.bak";
-                string backupPath = Path.Combine(Path.GetTempPath(), backupFile);
+                string backupPath = Path.Combine(firstDest, backupFile); // Use first destination for .bak
                 BackupDatabase(config.Server, config.Database, backupPath);
 
                 string zipPath = backupPath + ".zip";
@@ -145,8 +149,10 @@ namespace BbBackup
                 }
                 File.Delete(backupPath);
 
-                foreach (var dest in config.Destinations)
+                // Copy zip to all destinations except the first
+                for (int i = 1; i < config.Destinations.Count; i++)
                 {
+                    var dest = config.Destinations[i];
                     Directory.CreateDirectory(dest);
                     File.Copy(zipPath, Path.Combine(dest, Path.GetFileName(zipPath)), true);
                 }
@@ -163,7 +169,7 @@ namespace BbBackup
                     }
                 }
 
-                File.Delete(zipPath);
+                // Do NOT delete the zip file in the first destination
                 if (!scheduled)
                     MessageBox.Show("ÇßÊãá ÇáäÓÎ ÇáÇÍÊíÇØí æÇáÖÛØ æÇáäÓÎ.");
             }

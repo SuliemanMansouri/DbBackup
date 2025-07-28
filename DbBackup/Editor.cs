@@ -7,6 +7,7 @@ namespace DbBackup
         private string configPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "backupconfig.json");
         private BackupConfig config;
         private bool hasPendingChanges = false;
+        private BackupConfig lastLoadedConfig;
 
         public Editor()
         {
@@ -42,7 +43,6 @@ namespace DbBackup
                 MessageBox.Show(" ⁄–— ﬁ—«¡… „·› «·≈⁄œ«œ« .");
                 return;
             }
-           
             txtServer.Text = config.Server;
             txtDatabase.Text = config.Database;
             lstDestinations.Items.Clear();
@@ -53,6 +53,37 @@ namespace DbBackup
             lstScheduledTimes.Items.Clear();
             if (config.ScheduledTimes != null)
                 lstScheduledTimes.Items.AddRange(config.ScheduledTimes.ToArray());
+            lastLoadedConfig = CloneConfig(config);
+            hasPendingChanges = false;
+        }
+
+        private BackupConfig CloneConfig(BackupConfig source)
+        {
+            return new BackupConfig
+            {
+                Server = source.Server,
+                Database = source.Database,
+                Destinations = source.Destinations != null ? new List<string>(source.Destinations) : new List<string>(),
+                SaveToRemovable = source.SaveToRemovable,
+                UseSchedule = source.UseSchedule,
+                ScheduledTimes = source.ScheduledTimes != null ? new List<string>(source.ScheduledTimes) : new List<string>()
+            };
+        }
+
+        private bool IsConfigChanged()
+        {
+            if (lastLoadedConfig == null) return false;
+            if (txtServer.Text != lastLoadedConfig.Server) return true;
+            if (txtDatabase.Text != lastLoadedConfig.Database) return true;
+            if (chkSaveToRemovable.Checked != lastLoadedConfig.SaveToRemovable) return true;
+            if (chkUseSchedule.Checked != lastLoadedConfig.UseSchedule) return true;
+            if (lstDestinations.Items.Count != lastLoadedConfig.Destinations.Count) return true;
+            for (int i = 0; i < lstDestinations.Items.Count; i++)
+                if ((string)lstDestinations.Items[i] != lastLoadedConfig.Destinations[i]) return true;
+            if (lstScheduledTimes.Items.Count != lastLoadedConfig.ScheduledTimes.Count) return true;
+            for (int i = 0; i < lstScheduledTimes.Items.Count; i++)
+                if ((string)lstScheduledTimes.Items[i] != lastLoadedConfig.ScheduledTimes[i]) return true;
+            return false;
         }
 
         private void BtnSave_Click(object sender, EventArgs e)
@@ -110,7 +141,7 @@ namespace DbBackup
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            if (hasPendingChanges)
+            if (IsConfigChanged())
             {
                 var result = MessageBox.Show("Â‰«ﬂ  €ÌÌ—«  €Ì— „Õ›ÊŸ… ›Ì «·≈⁄œ«œ« . Â·  —Ìœ «·„ «»⁄… »œÊ‰ Õ›Ÿø", " √ﬂÌœ «·≈€·«ﬁ", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
                 if (result == DialogResult.No)

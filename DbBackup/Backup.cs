@@ -1,7 +1,6 @@
 using DbBackup;
-using Microsoft.Data.SqlClient;
-using System.IO.Compression;
-using System.Text.Json;
+using System;
+using System.Windows.Forms;
 
 namespace BbBackup
 {
@@ -15,31 +14,37 @@ namespace BbBackup
         private ContextMenuStrip trayMenu;
         private ToolStripMenuItem removableStatusMenuItem;
         private ToolStripMenuItem scheduleStatusMenuItem;
+        private readonly IConfigService configService;
+        private readonly IBackupService backupService;
 
-        public Backup()
+        public Backup() : this(
+            new ConfigService(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "backupconfig.json")),
+            new BackupService())
+        {
+        }
+
+        public Backup(IConfigService configService, IBackupService backupService)
         {
             InitializeComponent();
+            this.configService = configService;
+            this.backupService = backupService;
             // Add NotifyIcon for system tray
             trayIcon = new NotifyIcon();
-            trayIcon.Icon = SystemIcons.Application; // You can set your own icon here
+            trayIcon.Icon = SystemIcons.Application;
             trayIcon.Text = "»—‰«„Ã «·‰”Œ «·«Õ Ì«ÿÌ";
             trayIcon.Visible = false;
             trayIcon.DoubleClick += TrayIcon_DoubleClick;
             trayIcon.Icon = new Icon("DbBackup.ico");
-
             // Start minimized
             WindowState = FormWindowState.Minimized;
-
             // Load config
-            currentConfig = LoadConfig();
-
+            currentConfig = configService.LoadConfig();
             // Setup schedule timer
             scheduleTimer = new System.Windows.Forms.Timer();
             scheduleTimer.Interval = 60 * 1000; // 1 minute
             scheduleTimer.Tick += ScheduleTimer_Tick;
             if (currentConfig.UseSchedule)
                 scheduleTimer.Start();
-
             // Setup tray context menu
             trayMenu = new ContextMenuStrip();
             var backupMenuItem = new ToolStripMenuItem("‰”Œ «Õ Ì«ÿÌ «·¬‰");
@@ -62,7 +67,7 @@ namespace BbBackup
 
         private void ScheduleTimer_Tick(object sender, EventArgs e)
         {
-            currentConfig = LoadConfig(); // Reload config in case it changed
+            currentConfig = configService.LoadConfig(); // Reload config in case it changed
             if (!currentConfig.UseSchedule || currentConfig.ScheduledTimes == null)
                 return;
             string now = DateTime.Now.ToString("HH:mm");
@@ -107,37 +112,6 @@ namespace BbBackup
             Close();
         }
 
-        private BackupConfig LoadConfig()
-        {
-            string configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "backupconfig.json");
-            string json = File.ReadAllText(configPath);
-            var config = JsonSerializer.Deserialize<BackupConfig>(json);
-            if (config == null)
-                throw new InvalidOperationException("Failed to deserialize backupconfig.json.");
-            return config;
-        }
-
-        private void BackupDatabase(string server, string database, string backupPath)
-        {
-            string connectionString = $"Server={server};Database=master;Integrated Security=True;TrustServerCertificate=True;";
-            // Shrink database first
-            string shrinkSql = $"DBCC SHRINKDATABASE([{database}])";
-            using (var connection = new SqlConnection(connectionString))
-            {
-                connection.Open();
-                using (var shrinkCommand = new SqlCommand(shrinkSql, connection))
-                {
-                    shrinkCommand.ExecuteNonQuery();
-                }
-                // Backup after shrink
-                string backupSql = $"BACKUP DATABASE [{database}] TO DISK = N'{backupPath}' WITH INIT, FORMAT";
-                using (var backupCommand = new SqlCommand(backupSql, connection))
-                {
-                    backupCommand.ExecuteNonQuery();
-                }
-            }
-        }
-
         private void BackpButton_Click(object sender, EventArgs e)
         {
             RunBackup(scheduled: false);
@@ -171,13 +145,12 @@ namespace BbBackup
         {
             try
             {
-                var config = LoadConfig();
+                var config = configService.LoadConfig();
                 if (config.Destinations == null || config.Destinations.Count == 0)
                 {
                     MessageBox.Show("ÌÃ»  ÕœÌœ „Ã·œ«  ··‰”Œ «·«Õ Ì«ÿÌ.");
                     return;
                 }
-               
                 int steps = 5 + (config.Destinations.Count - 1) + (config.SaveToRemovable ? 1 : 0); // shrink, backup, zip, copy, removable, finish
                 int progress = 0;
                 progressBar1.Maximum = steps;
@@ -185,46 +158,33 @@ namespace BbBackup
                 UpdateProgressLabel("»œ¡ «·‰”Œ «·«Õ Ì«ÿÌ...");
 
                 string firstDest = config.Destinations[0];
-                Directory.CreateDirectory(firstDest); // Ensure folder exists
+                System.IO.Directory.CreateDirectory(firstDest); // Ensure folder exists
                 string backupFile = $"{config.Database}_{DateTime.Now:yyyyMMddHHmmss}.bak";
-                string backupPath = Path.Combine(firstDest, backupFile); // Use first destination for .bak
+                string backupPath = System.IO.Path.Combine(firstDest, backupFile); // Use first destination for .bak
 
                 UpdateProgressLabel("Ã«—Ì  ﬁ·Ì’ ﬁ«⁄œ… «·»Ì«‰« ...");
                 // Shrink and backup
-                BackupDatabase(config.Server, config.Database, backupPath);
+                backupService.BackupDatabase(config.Server, config.Database, backupPath);
                 UpdateProgress(progress++); // After shrink+backup
                 UpdateProgressLabel("Ã«—Ì «·‰”Œ «·«Õ Ì«ÿÌ...");
 
-                string zipPath = backupPath + ".zip";
                 UpdateProgressLabel("Ã«—Ì «·÷€ÿ...");
-                using (var zip = ZipFile.Open(zipPath, ZipArchiveMode.Create))
-                {
-                    zip.CreateEntryFromFile(backupPath, Path.GetFileName(backupPath));
-                }
-                File.Delete(backupPath);
+                string zipPath = backupService.CreateZip(backupPath);
                 UpdateProgress(progress++); // After zip
 
                 // Copy zip to all destinations except the first
+                backupService.CopyToDestinations(zipPath, config.Destinations);
                 for (int i = 1; i < config.Destinations.Count; i++)
                 {
-                    var dest = config.Destinations[i];
-                    Directory.CreateDirectory(dest);
-                    UpdateProgressLabel($"Ã«—Ì «·‰”Œ ≈·Ï {dest}...");
-                    File.Copy(zipPath, Path.Combine(dest, Path.GetFileName(zipPath)), true);
+                    UpdateProgressLabel($"Ã«—Ì «·‰”Œ ≈·Ï {config.Destinations[i]}...");
                     UpdateProgress(progress++); // After each copy
                 }
 
                 // Removable drive logic
                 if (config.SaveToRemovable)
                 {
-                    var removable = DriveInfo.GetDrives()
-                        .FirstOrDefault(d => d.DriveType == DriveType.Removable && d.IsReady);
-                    if (removable != null)
-                    {
-                        UpdateProgressLabel("Ã«—Ì «·‰”Œ ≈·Ï ÊÕœ… Œ«—ÃÌ…...");
-                        string removableDest = Path.Combine(removable.RootDirectory.FullName, Path.GetFileName(zipPath));
-                        File.Copy(zipPath, removableDest, true);
-                    }
+                    UpdateProgressLabel("Ã«—Ì «·‰”Œ ≈·Ï ÊÕœ… Œ«—ÃÌ…...");
+                    backupService.CopyToRemovable(zipPath);
                     UpdateProgress(progress++); // After removable
                 }
 
@@ -233,7 +193,7 @@ namespace BbBackup
                 // Do NOT delete the zip file in the first destination
                 if (!scheduled)
                     MessageBox.Show("«ﬂ „· «·‰”Œ «·«Õ Ì«ÿÌ Ê«·÷€ÿ Ê«·‰”Œ.");
-                File.Delete(zipPath); // Clean up zip file after copying
+                System.IO.File.Delete(zipPath); // Clean up zip file after copying
             }
             catch (Exception ex)
             {
@@ -247,7 +207,6 @@ namespace BbBackup
             // Already handled in constructor
         }
 
-        
         private void OpenEditorButton_Click(object sender, EventArgs e)
         {
             var editor = new Editor();
@@ -256,7 +215,7 @@ namespace BbBackup
 
         private void TrayMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            var config = LoadConfig();
+            var config = configService.LoadConfig();
             removableStatusMenuItem.Checked = config.SaveToRemovable;
             scheduleStatusMenuItem.Checked = config.UseSchedule;
         }

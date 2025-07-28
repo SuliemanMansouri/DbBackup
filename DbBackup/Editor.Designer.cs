@@ -58,6 +58,7 @@
             // 
             txtServer.Location = new Point(50, 3);
             txtServer.Name = "txtServer";
+            txtServer.RightToLeft = RightToLeft.No;
             txtServer.Size = new Size(200, 23);
             txtServer.TabIndex = 1;
             // 
@@ -65,6 +66,7 @@
             // 
             txtDatabase.Location = new Point(50, 32);
             txtDatabase.Name = "txtDatabase";
+            txtDatabase.RightToLeft = RightToLeft.No;
             txtDatabase.Size = new Size(200, 23);
             txtDatabase.TabIndex = 3;
             // 
@@ -73,6 +75,7 @@
             lstDestinations.Dock = DockStyle.Top;
             lstDestinations.Location = new Point(50, 61);
             lstDestinations.Name = "lstDestinations";
+            lstDestinations.RightToLeft = RightToLeft.No;
             lstDestinations.Size = new Size(200, 79);
             lstDestinations.TabIndex = 5;
             // 

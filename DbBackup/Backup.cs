@@ -44,11 +44,14 @@ namespace BbBackup
             trayMenu = new ContextMenuStrip();
             var backupMenuItem = new ToolStripMenuItem("‰”Œ «Õ Ì«ÿÌ «·¬‰");
             backupMenuItem.Click += (s, e) => BackpButton_Click(this, EventArgs.Empty);
+            var settingsMenuItem = new ToolStripMenuItem("«·≈⁄œ«œ« ");
+            settingsMenuItem.Click += (s, e) => OpenEditorButton_Click(this, EventArgs.Empty);
             var exitMenuItem = new ToolStripMenuItem("≈€·«ﬁ «·»—‰«„Ã");
             exitMenuItem.Click += (s, e) => ExitApp();
             removableStatusMenuItem = new ToolStripMenuItem("«·‰”Œ ≈·Ï ÊÕœ… Œ«—ÃÌ…") { Enabled = false };
             scheduleStatusMenuItem = new ToolStripMenuItem("«·ÃœÊ·… «· ·ﬁ«∆Ì…") { Enabled = false };
             trayMenu.Items.Add(backupMenuItem);
+            trayMenu.Items.Add(settingsMenuItem);
             trayMenu.Items.Add(exitMenuItem);
             trayMenu.Items.Add(new ToolStripSeparator());
             trayMenu.Items.Add(removableStatusMenuItem);
@@ -117,16 +120,51 @@ namespace BbBackup
         private void BackupDatabase(string server, string database, string backupPath)
         {
             string connectionString = $"Server={server};Database=master;Integrated Security=True;TrustServerCertificate=True;";
-            string sql = $"BACKUP DATABASE [{database}] TO DISK = N'{backupPath}' WITH INIT, FORMAT";
-            using var connection = new SqlConnection(connectionString);
-            using var command = new SqlCommand(sql, connection);
-            connection.Open();
-            command.ExecuteNonQuery();
+            // Shrink database first
+            string shrinkSql = $"DBCC SHRINKDATABASE([{database}])";
+            using (var connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                using (var shrinkCommand = new SqlCommand(shrinkSql, connection))
+                {
+                    shrinkCommand.ExecuteNonQuery();
+                }
+                // Backup after shrink
+                string backupSql = $"BACKUP DATABASE [{database}] TO DISK = N'{backupPath}' WITH INIT, FORMAT";
+                using (var backupCommand = new SqlCommand(backupSql, connection))
+                {
+                    backupCommand.ExecuteNonQuery();
+                }
+            }
         }
 
         private void BackpButton_Click(object sender, EventArgs e)
         {
             RunBackup(scheduled: false);
+        }
+
+        private void UpdateProgress(int value)
+        {
+            if (progressBar1.InvokeRequired)
+            {
+                progressBar1.Invoke(new Action(() => progressBar1.Value = value));
+            }
+            else
+            {
+                progressBar1.Value = value;
+            }
+        }
+
+        private void UpdateProgressLabel(string text)
+        {
+            if (ProgressLabel.InvokeRequired)
+            {
+                ProgressLabel.Invoke(new Action(() => ProgressLabel.Text = text));
+            }
+            else
+            {
+                ProgressLabel.Text = text;
+            }
         }
 
         private void RunBackup(bool scheduled)
@@ -136,25 +174,40 @@ namespace BbBackup
                 var config = LoadConfig();
                 if (config.Destinations == null || config.Destinations.Count == 0)
                     throw new InvalidOperationException("No backup destinations configured.");
+                int steps = 5 + (config.Destinations.Count - 1) + (config.SaveToRemovable ? 1 : 0); // shrink, backup, zip, copy, removable, finish
+                int progress = 0;
+                progressBar1.Maximum = steps;
+                UpdateProgress(progress++); // Start
+                UpdateProgressLabel("»œ¡ «·‰”Œ «·«Õ Ì«ÿÌ...");
+
                 string firstDest = config.Destinations[0];
                 Directory.CreateDirectory(firstDest); // Ensure folder exists
                 string backupFile = $"{config.Database}_{DateTime.Now:yyyyMMddHHmmss}.bak";
                 string backupPath = Path.Combine(firstDest, backupFile); // Use first destination for .bak
+
+                UpdateProgressLabel("Ã«—Ì  ﬁ·Ì’ ﬁ«⁄œ… «·»Ì«‰« ...");
+                // Shrink and backup
                 BackupDatabase(config.Server, config.Database, backupPath);
+                UpdateProgress(progress++); // After shrink+backup
+                UpdateProgressLabel("Ã«—Ì «·‰”Œ «·«Õ Ì«ÿÌ...");
 
                 string zipPath = backupPath + ".zip";
+                UpdateProgressLabel("Ã«—Ì «·÷€ÿ...");
                 using (var zip = ZipFile.Open(zipPath, ZipArchiveMode.Create))
                 {
                     zip.CreateEntryFromFile(backupPath, Path.GetFileName(backupPath));
                 }
                 File.Delete(backupPath);
+                UpdateProgress(progress++); // After zip
 
                 // Copy zip to all destinations except the first
                 for (int i = 1; i < config.Destinations.Count; i++)
                 {
                     var dest = config.Destinations[i];
                     Directory.CreateDirectory(dest);
+                    UpdateProgressLabel($"Ã«—Ì «·‰”Œ ≈·Ï {dest}...");
                     File.Copy(zipPath, Path.Combine(dest, Path.GetFileName(zipPath)), true);
+                    UpdateProgress(progress++); // After each copy
                 }
 
                 // Removable drive logic
@@ -164,17 +217,23 @@ namespace BbBackup
                         .FirstOrDefault(d => d.DriveType == DriveType.Removable && d.IsReady);
                     if (removable != null)
                     {
+                        UpdateProgressLabel("Ã«—Ì «·‰”Œ ≈·Ï ÊÕœ… Œ«—ÃÌ…...");
                         string removableDest = Path.Combine(removable.RootDirectory.FullName, Path.GetFileName(zipPath));
                         File.Copy(zipPath, removableDest, true);
                     }
+                    UpdateProgress(progress++); // After removable
                 }
 
+                UpdateProgress(steps); // Finish
+                UpdateProgressLabel("«ﬂ „· «·‰”Œ «·«Õ Ì«ÿÌ.");
                 // Do NOT delete the zip file in the first destination
                 if (!scheduled)
                     MessageBox.Show("«ﬂ „· «·‰”Œ «·«Õ Ì«ÿÌ Ê«·÷€ÿ Ê«·‰”Œ.");
+                File.Delete(zipPath); // Clean up zip file after copying
             }
             catch (Exception ex)
             {
+                UpdateProgressLabel("ÕœÀ Œÿ√ √À‰«¡ «·‰”Œ «·«Õ Ì«ÿÌ.");
                 MessageBox.Show($"Œÿ√: {ex.Message}");
             }
         }

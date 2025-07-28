@@ -288,7 +288,7 @@
             Name = "Editor";
             RightToLeft = RightToLeft.Yes;
             RightToLeftLayout = true;
-            StartPosition = FormStartPosition.CenterParent;
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "تعديل إعدادات النسخ الاحتياطي";
             Load += Editor_Load;
             tableLayoutPanel1.ResumeLayout(false);

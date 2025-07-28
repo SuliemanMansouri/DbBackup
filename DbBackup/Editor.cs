@@ -6,6 +6,7 @@ namespace DbBackup
     {
         private string configPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "backupconfig.json");
         private BackupConfig config;
+        private bool hasPendingChanges = false;
 
         public Editor()
         {
@@ -16,13 +17,22 @@ namespace DbBackup
             btnRemoveTime.Click += BtnRemoveTime_Click;
             btnLoad.Click += BtnLoad_Click;
             btnSave.Click += BtnSave_Click;
+            // Track changes in controls
+            txtServer.TextChanged += (s, e) => hasPendingChanges = true;
+            txtDatabase.TextChanged += (s, e) => hasPendingChanges = true;
+            lstDestinations.SelectedIndexChanged += (s, e) => hasPendingChanges = true;
+            lstDestinations.TextChanged += (s, e) => hasPendingChanges = true;
+            chkSaveToRemovable.CheckedChanged += (s, e) => hasPendingChanges = true;
+            chkUseSchedule.CheckedChanged += (s, e) => hasPendingChanges = true;
+            lstScheduledTimes.SelectedIndexChanged += (s, e) => hasPendingChanges = true;
+            lstScheduledTimes.TextChanged += (s, e) => hasPendingChanges = true;
         }
 
         private void BtnLoad_Click(object sender, EventArgs e)
         {
             if (!System.IO.File.Exists(configPath))
             {
-                MessageBox.Show("áã íÊã ÇáÚËæÑ Úáì ãáİ ÇáÅÚÏÇÏÇÊ.");
+                MessageBox.Show("áÇ íæÌÏ ãáİ ÅÚÏÇÏÇÊ ÈÚÏ.");
                 return;
             }
             var json = System.IO.File.ReadAllText(configPath);
@@ -32,6 +42,7 @@ namespace DbBackup
                 MessageBox.Show("ÊÚĞÑ ŞÑÇÁÉ ãáİ ÇáÅÚÏÇÏÇÊ.");
                 return;
             }
+           
             txtServer.Text = config.Server;
             txtDatabase.Text = config.Database;
             lstDestinations.Items.Clear();
@@ -57,6 +68,7 @@ namespace DbBackup
             var json = JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true });
             System.IO.File.WriteAllText(configPath, json);
             MessageBox.Show("Êã ÍİÙ ÇáÅÚÏÇÏÇÊ ÈäÌÇÍ.");
+            hasPendingChanges = false;
         }
 
         private void BtnAddDestination_Click(object sender, EventArgs e)
@@ -94,6 +106,26 @@ namespace DbBackup
         private void Editor_Load(object sender, EventArgs e)
         {
             BtnLoad_Click(sender, e);
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            if (hasPendingChanges)
+            {
+                var result = MessageBox.Show("åäÇß ÊÛííÑÇÊ ÛíÑ ãÍİæÙÉ İí ÇáÅÚÏÇÏÇÊ. åá ÊÑíÏ ÇáãÊÇÈÚÉ ÈÏæä ÍİÙ¿", "ÊÃßíÏ ÇáÅÛáÇŞ", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                if (result == DialogResult.No)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+            }
+            if (config == null || config.Destinations == null || config.Destinations.Count == 0)
+            {
+                MessageBox.Show("íÌÈ ÊÍÏíÏ ãÌáÏ æÇÍÏ Úáì ÇáÃŞá ááäÓÎ ÇáÇÍÊíÇØí ŞÈá ÅÛáÇŞ äÇİĞÉ ÇáÅÚÏÇÏÇÊ.");
+                e.Cancel = true;
+                return;
+            }
+            base.OnFormClosing(e);
         }
     }
 

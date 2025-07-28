@@ -173,7 +173,11 @@ namespace BbBackup
             {
                 var config = LoadConfig();
                 if (config.Destinations == null || config.Destinations.Count == 0)
-                    throw new InvalidOperationException("No backup destinations configured.");
+                {
+                    MessageBox.Show("ÌÃ»  ÕœÌœ „Ã·œ«  ··‰”Œ «·«Õ Ì«ÿÌ.");
+                    return;
+                }
+               
                 int steps = 5 + (config.Destinations.Count - 1) + (config.SaveToRemovable ? 1 : 0); // shrink, backup, zip, copy, removable, finish
                 int progress = 0;
                 progressBar1.Maximum = steps;

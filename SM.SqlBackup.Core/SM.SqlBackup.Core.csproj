@@ -4,6 +4,15 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <!-- NuGet package metadata -->
+    <PackageId>SM.SqlBackup.Core</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Sulieman Mansouri</Authors>
+    <Company>Sulieman Mansouri Software</Company>
+    <Description>Core library for SQL backup operations.</Description>
+    <PackageTags>sql;backup;database;core</PackageTags>
+    <RepositoryUrl>https://github.com/your/repository</RepositoryUrl>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>

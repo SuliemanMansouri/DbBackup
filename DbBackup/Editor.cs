@@ -107,6 +107,7 @@ namespace DbBackup
             System.IO.File.WriteAllText(configPath, json);
             MessageBox.Show(" „ Õ›Ÿ «·≈⁄œ«œ«  »‰Ã«Õ.");
             hasPendingChanges = false;
+            lastLoadedConfig = CloneConfig(config); // Ensure config is up to date for change tracking
         }
 
         private void BtnAddDestination_Click(object sender, EventArgs e)

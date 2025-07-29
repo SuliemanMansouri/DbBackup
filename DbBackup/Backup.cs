@@ -168,7 +168,7 @@ namespace BbBackup
 
         private void RunBackup(bool scheduled)
         {
-            bool success = false;
+           
             UpdateProgressLabelSafe(""); // Clear progress label before starting
             try
             {
@@ -216,7 +216,7 @@ namespace BbBackup
 
                 UpdateProgressSafe(progress++); // Finish
                 UpdateProgressLabelSafe("«ﬂ „· «·‰”Œ «·«Õ Ì«ÿÌ.");
-                success = true;
+               
             }
             catch (Exception ex)
             {

@@ -8,4 +8,5 @@ public class BackupConfig
     public bool SaveToRemovable { get; set; } // Added property
     public bool UseSchedule { get; set; } // Added property
     public List<string> ScheduledTimes { get; set; } = []; // Added property
+    public int MaxCopies { get; set; } = 7; // Maximum number of backup copies
 }

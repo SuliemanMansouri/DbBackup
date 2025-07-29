@@ -49,9 +49,13 @@
             tableLayoutPanel1 = new TableLayoutPanel();
             tableLayoutPanel2 = new TableLayoutPanel();
             tableLayoutPanel3 = new TableLayoutPanel();
+            lblMaxCopies = new Label();
+            numMaxCopies = new NumericUpDown();
+            toolTip1 = new ToolTip();
             tableLayoutPanel1.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             tableLayoutPanel3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)numMaxCopies).BeginInit();
             SuspendLayout();
             // 
             // txtServer
@@ -76,53 +80,53 @@
             lstDestinations.Location = new Point(50, 61);
             lstDestinations.Name = "lstDestinations";
             lstDestinations.RightToLeft = RightToLeft.No;
-            lstDestinations.Size = new Size(200, 79);
+            lstDestinations.Size = new Size(200, 94);
             lstDestinations.TabIndex = 5;
             // 
             // btnAddDestination
             // 
             btnAddDestination.Location = new Point(3, 3);
             btnAddDestination.Name = "btnAddDestination";
-            btnAddDestination.Size = new Size(30, 23);
-            btnAddDestination.TabIndex = 6;
+            btnAddDestination.Size = new Size(30, 21);
+            btnAddDestination.TabIndex = 0;
             btnAddDestination.Text = "+";
             // 
             // btnRemoveDestination
             // 
-            btnRemoveDestination.Location = new Point(3, 32);
+            btnRemoveDestination.Location = new Point(3, 31);
             btnRemoveDestination.Name = "btnRemoveDestination";
-            btnRemoveDestination.Size = new Size(30, 23);
-            btnRemoveDestination.TabIndex = 7;
+            btnRemoveDestination.Size = new Size(30, 22);
+            btnRemoveDestination.TabIndex = 1;
             btnRemoveDestination.Text = "-";
             // 
             // chkSaveToRemovable
             // 
-            chkSaveToRemovable.Location = new Point(146, 146);
+            chkSaveToRemovable.Location = new Point(146, 161);
             chkSaveToRemovable.Name = "chkSaveToRemovable";
             chkSaveToRemovable.Size = new Size(104, 24);
-            chkSaveToRemovable.TabIndex = 9;
+            chkSaveToRemovable.TabIndex = 8;
             // 
             // chkUseSchedule
             // 
-            chkUseSchedule.Location = new Point(146, 176);
+            chkUseSchedule.Location = new Point(146, 191);
             chkUseSchedule.Name = "chkUseSchedule";
             chkUseSchedule.Size = new Size(104, 24);
-            chkUseSchedule.TabIndex = 11;
+            chkUseSchedule.TabIndex = 10;
             // 
             // lstScheduledTimes
             // 
             lstScheduledTimes.Dock = DockStyle.Top;
-            lstScheduledTimes.Location = new Point(50, 206);
+            lstScheduledTimes.Location = new Point(50, 221);
             lstScheduledTimes.Name = "lstScheduledTimes";
             lstScheduledTimes.Size = new Size(200, 94);
-            lstScheduledTimes.TabIndex = 13;
+            lstScheduledTimes.TabIndex = 12;
             // 
             // btnAddTime
             // 
             btnAddTime.Location = new Point(3, 3);
             btnAddTime.Name = "btnAddTime";
             btnAddTime.Size = new Size(30, 23);
-            btnAddTime.TabIndex = 14;
+            btnAddTime.TabIndex = 1;
             btnAddTime.Text = "+";
             // 
             // btnRemoveTime
@@ -130,12 +134,12 @@
             btnRemoveTime.Location = new Point(3, 32);
             btnRemoveTime.Name = "btnRemoveTime";
             btnRemoveTime.Size = new Size(30, 23);
-            btnRemoveTime.TabIndex = 15;
+            btnRemoveTime.TabIndex = 0;
             btnRemoveTime.Text = "-";
             // 
             // btnLoad
             // 
-            btnLoad.Location = new Point(306, 306);
+            btnLoad.Location = new Point(306, 350);
             btnLoad.Name = "btnLoad";
             btnLoad.Size = new Size(80, 30);
             btnLoad.TabIndex = 16;
@@ -143,7 +147,7 @@
             // 
             // btnSave
             // 
-            btnSave.Location = new Point(170, 306);
+            btnSave.Location = new Point(170, 350);
             btnSave.Name = "btnSave";
             btnSave.Size = new Size(80, 30);
             btnSave.TabIndex = 17;
@@ -177,7 +181,7 @@
             lblDestinations.Dock = DockStyle.Fill;
             lblDestinations.Location = new Point(256, 58);
             lblDestinations.Name = "lblDestinations";
-            lblDestinations.Size = new Size(130, 85);
+            lblDestinations.Size = new Size(130, 100);
             lblDestinations.TabIndex = 4;
             lblDestinations.Text = "مجلدات النسخ الاحتياطي:";
             lblDestinations.TextAlign = ContentAlignment.MiddleLeft;
@@ -186,10 +190,10 @@
             // 
             lblSaveToRemovable.AutoSize = true;
             lblSaveToRemovable.Dock = DockStyle.Fill;
-            lblSaveToRemovable.Location = new Point(256, 143);
+            lblSaveToRemovable.Location = new Point(256, 158);
             lblSaveToRemovable.Name = "lblSaveToRemovable";
             lblSaveToRemovable.Size = new Size(130, 30);
-            lblSaveToRemovable.TabIndex = 8;
+            lblSaveToRemovable.TabIndex = 7;
             lblSaveToRemovable.Text = "احفظ على وحدة خارجية:";
             lblSaveToRemovable.TextAlign = ContentAlignment.MiddleLeft;
             // 
@@ -197,10 +201,10 @@
             // 
             lblUseSchedule.AutoSize = true;
             lblUseSchedule.Dock = DockStyle.Fill;
-            lblUseSchedule.Location = new Point(256, 173);
+            lblUseSchedule.Location = new Point(256, 188);
             lblUseSchedule.Name = "lblUseSchedule";
             lblUseSchedule.Size = new Size(130, 30);
-            lblUseSchedule.TabIndex = 10;
+            lblUseSchedule.TabIndex = 9;
             lblUseSchedule.Text = "استخدم الجدولة:";
             lblUseSchedule.TextAlign = ContentAlignment.MiddleLeft;
             // 
@@ -208,10 +212,10 @@
             // 
             lblScheduledTimes.AutoSize = true;
             lblScheduledTimes.Dock = DockStyle.Fill;
-            lblScheduledTimes.Location = new Point(256, 203);
+            lblScheduledTimes.Location = new Point(256, 218);
             lblScheduledTimes.Name = "lblScheduledTimes";
             lblScheduledTimes.Size = new Size(130, 100);
-            lblScheduledTimes.TabIndex = 12;
+            lblScheduledTimes.TabIndex = 11;
             lblScheduledTimes.Text = "أوقات النسخ المجدول:";
             lblScheduledTimes.TextAlign = ContentAlignment.MiddleLeft;
             // 
@@ -222,8 +226,6 @@
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
             tableLayoutPanel1.Controls.Add(lblServer, 0, 0);
-            tableLayoutPanel1.Controls.Add(btnSave, 1, 6);
-            tableLayoutPanel1.Controls.Add(btnLoad, 0, 6);
             tableLayoutPanel1.Controls.Add(lstScheduledTimes, 1, 5);
             tableLayoutPanel1.Controls.Add(lblScheduledTimes, 0, 5);
             tableLayoutPanel1.Controls.Add(chkUseSchedule, 1, 4);
@@ -237,10 +239,14 @@
             tableLayoutPanel1.Controls.Add(txtServer, 1, 0);
             tableLayoutPanel1.Controls.Add(tableLayoutPanel2, 2, 2);
             tableLayoutPanel1.Controls.Add(tableLayoutPanel3, 2, 5);
+            tableLayoutPanel1.Controls.Add(btnSave, 1, 7);
+            tableLayoutPanel1.Controls.Add(btnLoad, 0, 7);
+            tableLayoutPanel1.Controls.Add(lblMaxCopies, 0, 6);
+            tableLayoutPanel1.Controls.Add(numMaxCopies, 1, 6);
             tableLayoutPanel1.Dock = DockStyle.Fill;
             tableLayoutPanel1.Location = new Point(0, 0);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
-            tableLayoutPanel1.RowCount = 7;
+            tableLayoutPanel1.RowCount = 8;
             tableLayoutPanel1.RowStyles.Add(new RowStyle());
             tableLayoutPanel1.RowStyles.Add(new RowStyle());
             tableLayoutPanel1.RowStyles.Add(new RowStyle());
@@ -248,8 +254,9 @@
             tableLayoutPanel1.RowStyles.Add(new RowStyle());
             tableLayoutPanel1.RowStyles.Add(new RowStyle());
             tableLayoutPanel1.RowStyles.Add(new RowStyle());
-            tableLayoutPanel1.Size = new Size(389, 346);
-            tableLayoutPanel1.TabIndex = 18;
+            tableLayoutPanel1.RowStyles.Add(new RowStyle());
+            tableLayoutPanel1.Size = new Size(389, 385);
+            tableLayoutPanel1.TabIndex = 0;
             // 
             // tableLayoutPanel2
             // 
@@ -263,7 +270,7 @@
             tableLayoutPanel2.RowCount = 2;
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel2.Size = new Size(36, 58);
+            tableLayoutPanel2.Size = new Size(36, 56);
             tableLayoutPanel2.TabIndex = 6;
             // 
             // tableLayoutPanel3
@@ -273,19 +280,37 @@
             tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle());
             tableLayoutPanel3.Controls.Add(btnAddTime, 0, 0);
             tableLayoutPanel3.Controls.Add(btnRemoveTime, 0, 1);
-            tableLayoutPanel3.Location = new Point(8, 206);
+            tableLayoutPanel3.Location = new Point(8, 221);
             tableLayoutPanel3.Name = "tableLayoutPanel3";
             tableLayoutPanel3.RowCount = 2;
             tableLayoutPanel3.RowStyles.Add(new RowStyle());
             tableLayoutPanel3.RowStyles.Add(new RowStyle());
             tableLayoutPanel3.Size = new Size(36, 58);
-            tableLayoutPanel3.TabIndex = 14;
+            tableLayoutPanel3.TabIndex = 13;
+            // 
+            // lblMaxCopies
+            // 
+            lblMaxCopies.AutoSize = true;
+            lblMaxCopies.Location = new Point(275, 318);
+            lblMaxCopies.Name = "lblMaxCopies";
+            lblMaxCopies.Size = new Size(111, 15);
+            lblMaxCopies.TabIndex = 14;
+            lblMaxCopies.Text = "عدد النسخ الاحتياطية:";
+            // 
+            // numMaxCopies
+            // 
+            numMaxCopies.Location = new Point(130, 321);
+            numMaxCopies.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            numMaxCopies.Name = "numMaxCopies";
+            numMaxCopies.Size = new Size(120, 23);
+            numMaxCopies.TabIndex = 15;
+            numMaxCopies.Value = new decimal(new int[] { 7, 0, 0, 0 });
             // 
             // Editor
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(389, 346);
+            ClientSize = new Size(389, 385);
             Controls.Add(tableLayoutPanel1);
             Font = new Font("Segoe UI", 9F);
             Name = "Editor";
@@ -298,7 +323,22 @@
             tableLayoutPanel1.PerformLayout();
             tableLayoutPanel2.ResumeLayout(false);
             tableLayoutPanel3.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)numMaxCopies).EndInit();
             ResumeLayout(false);
+            // ToolTip assignments
+            toolTip1.SetToolTip(txtServer, "اسم أو عنوان الخادم الذي يستضيف قاعدة البيانات.");
+            toolTip1.SetToolTip(txtDatabase, "اسم قاعدة البيانات التي سيتم نسخها احتياطيا.");
+            toolTip1.SetToolTip(lstDestinations, "قائمة المجلدات التي سيتم حفظ النسخ الاحتياطية فيها.");
+            toolTip1.SetToolTip(btnAddDestination, "إضافة مجلد جديد إلى قائمة الوجهات.");
+            toolTip1.SetToolTip(btnRemoveDestination, "إزالة المجلد المحدد من قائمة الوجهات.");
+            toolTip1.SetToolTip(chkSaveToRemovable, "حفظ نسخة احتياطية أيضًا على وحدة تخزين خارجية إذا كانت متصلة.");
+            toolTip1.SetToolTip(chkUseSchedule, "تفعيل النسخ الاحتياطي التلقائي في الأوقات المجدولة.");
+            toolTip1.SetToolTip(lstScheduledTimes, "الأوقات المجدولة (بتنسيق HH:mm) لتنفيذ النسخ الاحتياطي تلقائيًا.");
+            toolTip1.SetToolTip(btnAddTime, "إضافة وقت جديد إلى جدول النسخ الاحتياطي.");
+            toolTip1.SetToolTip(btnRemoveTime, "إزالة الوقت المحدد من جدول النسخ الاحتياطي.");
+            toolTip1.SetToolTip(btnLoad, "تحميل الإعدادات من ملف الإعدادات.");
+            toolTip1.SetToolTip(btnSave, "حفظ الإعدادات الحالية إلى ملف الإعدادات.");
+            toolTip1.SetToolTip(numMaxCopies, "الحد الأقصى لعدد النسخ الاحتياطية التي سيتم الاحتفاظ بها في كل مجلد وجهة.");
         }
 
         #endregion
@@ -324,5 +364,8 @@
         private TableLayoutPanel tableLayoutPanel1;
         private TableLayoutPanel tableLayoutPanel2;
         private TableLayoutPanel tableLayoutPanel3;
+        private Label lblMaxCopies;
+        private NumericUpDown numMaxCopies;
+        private ToolTip toolTip1;
     }
 }

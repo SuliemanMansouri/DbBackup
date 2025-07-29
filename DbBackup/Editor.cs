@@ -9,6 +9,7 @@ namespace DbBackup
         private BackupConfig config;
         private bool hasPendingChanges = false;
         private BackupConfig lastLoadedConfig;
+        
 
         public Editor()
         {
@@ -28,6 +29,7 @@ namespace DbBackup
             chkUseSchedule.CheckedChanged += (s, e) => hasPendingChanges = true;
             lstScheduledTimes.SelectedIndexChanged += (s, e) => hasPendingChanges = true;
             lstScheduledTimes.TextChanged += (s, e) => hasPendingChanges = true;
+            
         }
 
         private void BtnLoad_Click(object sender, EventArgs e)
@@ -54,6 +56,7 @@ namespace DbBackup
             lstScheduledTimes.Items.Clear();
             if (config.ScheduledTimes != null)
                 lstScheduledTimes.Items.AddRange(config.ScheduledTimes.ToArray());
+            numMaxCopies.Value = config.MaxCopies > 0 ? config.MaxCopies : 7;
             lastLoadedConfig = CloneConfig(config);
             hasPendingChanges = false;
         }
@@ -67,7 +70,8 @@ namespace DbBackup
                 Destinations = source.Destinations != null ? new List<string>(source.Destinations) : new List<string>(),
                 SaveToRemovable = source.SaveToRemovable,
                 UseSchedule = source.UseSchedule,
-                ScheduledTimes = source.ScheduledTimes != null ? new List<string>(source.ScheduledTimes) : new List<string>()
+                ScheduledTimes = source.ScheduledTimes != null ? new List<string>(source.ScheduledTimes) : new List<string>(),
+                MaxCopies = source.MaxCopies
             };
         }
 
@@ -84,6 +88,7 @@ namespace DbBackup
             if (lstScheduledTimes.Items.Count != lastLoadedConfig.ScheduledTimes.Count) return true;
             for (int i = 0; i < lstScheduledTimes.Items.Count; i++)
                 if ((string)lstScheduledTimes.Items[i] != lastLoadedConfig.ScheduledTimes[i]) return true;
+            if ((int)numMaxCopies.Value != lastLoadedConfig.MaxCopies) return true;
             return false;
         }
 
@@ -97,6 +102,7 @@ namespace DbBackup
             config.SaveToRemovable = chkSaveToRemovable.Checked;
             config.UseSchedule = chkUseSchedule.Checked;
             config.ScheduledTimes = lstScheduledTimes.Items.Cast<string>().ToList();
+            config.MaxCopies = (int)numMaxCopies.Value;
             var json = JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true });
             System.IO.File.WriteAllText(configPath, json);
             MessageBox.Show(" „ Õ›Ÿ «·≈⁄œ«œ«  »‰Ã«Õ.");

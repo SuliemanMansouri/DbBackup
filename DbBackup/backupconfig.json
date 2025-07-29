@@ -5,9 +5,10 @@
     "D:/BackupTest"
   ],
   "SaveToRemovable": true,
-  "UseSchedule": false,
+  "UseSchedule": true,
   "ScheduledTimes": [
     "02:00",
     "14:00"
-  ]
+  ],
+  "MaxCopies": 7
 }

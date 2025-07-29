@@ -1,6 +1,9 @@
 using DbBackup;
 using SM.SqlBackup.Core;
 using SM.SqlBackup.WinForms;
+using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Events;
 
 namespace BbBackup
 {
@@ -14,13 +17,39 @@ namespace BbBackup
         private ContextMenuStrip trayMenu;
         private ToolStripMenuItem removableStatusMenuItem;
         private ToolStripMenuItem scheduleStatusMenuItem;
+        private ToolStripMenuItem errorLogMenuItem;
         private readonly IConfigService configService;
         private readonly IBackupService backupService;
 
         public Backup() : this(
             new ConfigService(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "backupconfig.json")),
-            new BackupService())
+            CreateBackupServiceWithLogger())
         {
+        }
+
+        private static IBackupService CreateBackupServiceWithLogger()
+        {
+            var logFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "app.log");
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.File(
+                    logFilePath,
+                    fileSizeLimitBytes: 1048576, // 1 MB
+                    rollOnFileSizeLimit: true,
+                    retainedFileCountLimit: 1, // Only keep the latest file
+                    rollingInterval: RollingInterval.Infinite,
+                    shared: true,
+                    restrictedToMinimumLevel: LogEventLevel.Information,
+                    outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}"
+                )
+                .CreateLogger();
+
+            var loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddSerilog(Log.Logger, dispose: true);
+            });
+            var logger = loggerFactory.CreateLogger<BackupService>();
+            return new BackupService(logger);
         }
 
         public Backup(IConfigService configService, IBackupService backupService)
@@ -55,12 +84,15 @@ namespace BbBackup
             exitMenuItem.Click += (s, e) => ExitApp();
             removableStatusMenuItem = new ToolStripMenuItem("«·‰”Œ ≈·Ï ÊÕœ… Œ«—ÃÌ…") { Enabled = false };
             scheduleStatusMenuItem = new ToolStripMenuItem("«·ÃœÊ·… «· ·ﬁ«∆Ì…") { Enabled = false };
+            errorLogMenuItem = new ToolStripMenuItem("”Ã· «·√Œÿ«¡ (0)");
+            errorLogMenuItem.Click += ErrorLogMenuItem_Click;
             trayMenu.Items.Add(backupMenuItem);
             trayMenu.Items.Add(settingsMenuItem);
             trayMenu.Items.Add(exitMenuItem);
             trayMenu.Items.Add(new ToolStripSeparator());
             trayMenu.Items.Add(removableStatusMenuItem);
             trayMenu.Items.Add(scheduleStatusMenuItem);
+            trayMenu.Items.Add(errorLogMenuItem);
             trayIcon.ContextMenuStrip = trayMenu;
             trayMenu.Opening += TrayMenu_Opening;
         }
@@ -103,6 +135,14 @@ namespace BbBackup
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
+            if (e.CloseReason == CloseReason.UserClosing && !allowClose)
+            {
+                e.Cancel = true;
+                WindowState = FormWindowState.Minimized;
+                Hide();
+                trayIcon.Visible = true;
+                return;
+            }
             trayIcon.Dispose();
             base.OnFormClosing(e);
         }
@@ -144,12 +184,14 @@ namespace BbBackup
 
         private void RunBackup(bool scheduled)
         {
+            bool success = false;
+            UpdateProgressLabel(""); // Clear progress label before starting
             try
             {
                 var config = configService.LoadConfig();
                 if (config.Destinations == null || config.Destinations.Count == 0)
                 {
-                    MessageBox.Show("ÌÃ»  ÕœÌœ „Ã·œ«  ··‰”Œ «·«Õ Ì«ÿÌ.");
+                    UpdateProgressLabel("ÌÃ»  ÕœÌœ „Ã·œ«  ··‰”Œ «·«Õ Ì«ÿÌ.");
                     return;
                 }
                 int steps = 5 + (config.Destinations.Count - 1) + (config.SaveToRemovable ? 1 : 0); // shrink, backup, zip, copy, removable, finish
@@ -176,33 +218,30 @@ namespace BbBackup
                 UpdateProgress(progress++); // After zip
 
                 // Copy zip to all destinations except the first
-                backupService.CopyToDestinations(zipPath, config.Destinations);
-                for (int i = 1; i < config.Destinations.Count; i++)
-                {
-                    UpdateProgressLabel($"Ã«—Ì «·‰”Œ ≈·Ï {config.Destinations[i]}...");
-                    UpdateProgress(progress++); // After each copy
-                }
+                int maxCopies = config.MaxCopies > 0 ? config.MaxCopies : 7;
+
+                UpdateProgressLabel($"Ã«—Ì «·‰”Œ...");
+                backupService.CopyToDestinations(zipPath, config.Destinations, maxCopies);
+                UpdateProgress(progress++); 
+
 
                 // Removable drive logic
                 if (config.SaveToRemovable)
                 {
                     UpdateProgressLabel("Ã«—Ì «·‰”Œ ≈·Ï ÊÕœ… Œ«—ÃÌ…...");
-                    backupService.CopyToRemovable(zipPath);
+                    backupService.CopyToRemovable(zipPath, maxCopies);
                     UpdateProgress(progress++); // After removable
                 }
 
                 UpdateProgress(steps); // Finish
                 UpdateProgressLabel("«ﬂ „· «·‰”Œ «·«Õ Ì«ÿÌ.");
-                // Do NOT delete the zip file in the first destination
-                if (!scheduled)
-                    MessageBox.Show("«ﬂ „· «·‰”Œ «·«Õ Ì«ÿÌ Ê«·÷€ÿ Ê«·‰”Œ.");
-                System.IO.File.Delete(zipPath); // Clean up zip file after copying
+                success = true;
             }
             catch (Exception ex)
             {
-                UpdateProgressLabel("ÕœÀ Œÿ√ √À‰«¡ «·‰”Œ «·«Õ Ì«ÿÌ.");
-                MessageBox.Show($"Œÿ√: {ex.Message}");
+                UpdateProgressLabel($"ÕœÀ Œÿ√ √À‰«¡ «·‰”Œ «·«Õ Ì«ÿÌ: {ex.Message}");
             }
+            // No MessageBox.Show for completion or error
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -222,6 +261,52 @@ namespace BbBackup
             var config = configService.LoadConfig();
             removableStatusMenuItem.Checked = config.SaveToRemovable;
             scheduleStatusMenuItem.Checked = config.UseSchedule;
+            // Update error and warning log count
+            try
+            {
+                var logFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "app.log");
+                int errorCount = 0;
+                int warnCount = 0;
+                if (File.Exists(logFilePath))
+                {
+                    foreach (var line in File.ReadLines(logFilePath))
+                    {
+                        if (line.Contains("[EXCEPTION]") || line.Contains("[ERROR]")) errorCount++;
+                        if (line.Contains("[WARN]")) warnCount++;
+                    }
+                }
+                errorLogMenuItem.Text = $"«·√Œÿ«¡: {errorCount} | «· Õ–Ì—« : {warnCount}";
+                errorLogMenuItem.Enabled = (errorCount > 0 || warnCount > 0);
+            }
+            catch
+            {
+                errorLogMenuItem.Text = "”Ã· «·√Œÿ«¡ (Œÿ√)";
+                errorLogMenuItem.Enabled = false;
+            }
+        }
+
+        private void ErrorLogMenuItem_Click(object? sender, EventArgs e)
+        {
+            try
+            {
+                var logFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "app.log");
+                if (File.Exists(logFilePath))
+                {
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = logFilePath,
+                        UseShellExecute = true
+                    });
+                }
+                else
+                {
+                    MessageBox.Show("·« ÌÊÃœ „·› ”Ã· «·√Œÿ«¡.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($" ⁄–— › Õ ”Ã· «·√Œÿ«¡: {ex.Message}");
+            }
         }
     }
 }

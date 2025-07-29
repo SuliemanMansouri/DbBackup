@@ -32,6 +32,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SM.SqlBackup.Core\SM.SqlBackup.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Editor.cs">
       <SubType>Form</SubType>
     </Compile>

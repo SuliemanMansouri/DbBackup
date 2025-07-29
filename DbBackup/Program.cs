@@ -1,9 +1,10 @@
 using BbBackup;
+using DbBackup;
 using System;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace DbBackup
+namespace SM.SqlBackup.WinForms
 {
     internal static class Program
     {

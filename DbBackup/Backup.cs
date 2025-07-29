@@ -1,6 +1,6 @@
 using DbBackup;
-using System;
-using System.Windows.Forms;
+using SM.SqlBackup.Core;
+using SM.SqlBackup.WinForms;
 
 namespace BbBackup
 {
@@ -65,7 +65,8 @@ namespace BbBackup
             trayMenu.Opening += TrayMenu_Opening;
         }
 
-        private void ScheduleTimer_Tick(object sender, EventArgs e)
+        // Change the ScheduleTimer_Tick method signature to allow nullable sender
+        private void ScheduleTimer_Tick(object? sender, EventArgs e)
         {
             currentConfig = configService.LoadConfig(); // Reload config in case it changed
             if (!currentConfig.UseSchedule || currentConfig.ScheduledTimes == null)
@@ -92,12 +93,12 @@ namespace BbBackup
             }
         }
 
-        private void TrayIcon_DoubleClick(object sender, EventArgs e)
+        // Update the TrayIcon_DoubleClick method signature to allow nullable sender
+        private void TrayIcon_DoubleClick(object? sender, EventArgs e)
         {
             Show();
             WindowState = FormWindowState.Normal;
             trayIcon.Visible = false;
-
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
@@ -215,7 +216,8 @@ namespace BbBackup
             editor.ShowDialog();
         }
 
-        private void TrayMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        // Update the TrayMenu_Opening method signature to match the nullability of the CancelEventHandler delegate
+        private void TrayMenu_Opening(object? sender, System.ComponentModel.CancelEventArgs e)
         {
             var config = configService.LoadConfig();
             removableStatusMenuItem.Checked = config.SaveToRemovable;

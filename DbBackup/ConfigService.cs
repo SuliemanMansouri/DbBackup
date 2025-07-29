@@ -1,8 +1,6 @@
-using System;
-using System.IO;
 using System.Text.Json;
 
-namespace DbBackup
+namespace SM.SqlBackup.WinForms
 {
     public interface IConfigService
     {

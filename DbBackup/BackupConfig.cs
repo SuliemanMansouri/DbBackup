@@ -1,4 +1,4 @@
-namespace DbBackup;
+namespace SM.SqlBackup.WinForms;
 
 public class BackupConfig
 {

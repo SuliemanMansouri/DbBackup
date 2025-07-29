@@ -1,7 +1,7 @@
 using Microsoft.Data.SqlClient;
 using System.IO.Compression;
 
-namespace DbBackup
+namespace SM.SqlBackup.Core
 {
     public interface IBackupService
     {

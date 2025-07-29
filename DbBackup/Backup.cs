@@ -4,6 +4,7 @@ using SM.SqlBackup.WinForms;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
+using System.Threading.Tasks;
 
 namespace BbBackup
 {
@@ -24,7 +25,9 @@ namespace BbBackup
         public Backup() : this(
             new ConfigService(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "backupconfig.json")),
             CreateBackupServiceWithLogger())
+            
         {
+            progressBar1.Maximum = 6; // Set max steps for progress bar
         }
 
         private static IBackupService CreateBackupServiceWithLogger()
@@ -155,22 +158,73 @@ namespace BbBackup
 
         private void BackpButton_Click(object sender, EventArgs e)
         {
-            RunBackup(scheduled: false);
+            RunBackupAsync(false);
         }
 
-        private void UpdateProgress(int value)
+        private void RunBackupAsync(bool scheduled)
         {
-            if (progressBar1.InvokeRequired)
+            Task.Run(() => RunBackup(scheduled));
+        }
+
+        private void RunBackup(bool scheduled)
+        {
+            bool success = false;
+            UpdateProgressLabelSafe(""); // Clear progress label before starting
+            try
             {
-                progressBar1.Invoke(new Action(() => progressBar1.Value = value));
+                var config = configService.LoadConfig();
+                if (config.Destinations == null || config.Destinations.Count == 0)
+                {
+                    UpdateProgressLabelSafe("ÌÃ»  ÕœÌœ „Ã·œ«  ··‰”Œ «·«Õ Ì«ÿÌ.");
+                    return;
+                }
+                
+                int progress = 0;
+                UpdateProgressSafe(progress++); // Start
+                UpdateProgressLabelSafe("»œ¡ «·‰”Œ «·«Õ Ì«ÿÌ...");
+
+                string firstDest = config.Destinations[0];
+                Directory.CreateDirectory(firstDest); // Ensure folder exists
+                string backupFile = $"{config.Database}_{DateTime.Now:yyyyMMddHHmmss}.bak";
+                string backupPath = System.IO.Path.Combine(firstDest, backupFile); // Use first destination for .bak
+
+                UpdateProgressLabelSafe("Ã«—Ì  ﬁ·Ì’ ﬁ«⁄œ… «·»Ì«‰« ...");
+                backupService.ShrinkDatabase(config.Server, config.Database);
+                UpdateProgressSafe(progress++); // After shrink
+
+                UpdateProgressLabelSafe("Ã«—Ì «·‰”Œ «·«Õ Ì«ÿÌ...");
+                backupService.BackupDatabase(config.Server, config.Database, backupPath);
+                UpdateProgressSafe(progress++); // After backup
+
+                UpdateProgressLabelSafe("Ã«—Ì «·÷€ÿ...");
+                string zipPath = backupService.CreateZip(backupPath);
+                UpdateProgressSafe(progress++); // After zip
+
+                // Copy zip to all destinations except the first
+                int maxCopies = config.MaxCopies > 0 ? config.MaxCopies : 7;
+                UpdateProgressLabelSafe($"Ã«—Ì «·‰”Œ...");
+                backupService.CopyToDestinations(zipPath, config.Destinations, maxCopies);
+                UpdateProgressSafe(progress++);
+
+                // Removable drive logic
+                if (config.SaveToRemovable)
+                {
+                    UpdateProgressLabelSafe("Ã«—Ì «·‰”Œ ≈·Ï ÊÕœ… Œ«—ÃÌ…...");
+                    backupService.CopyToRemovable(zipPath, maxCopies);
+                    UpdateProgressSafe(progress++); // After removable
+                }
+
+                UpdateProgressSafe(progress++); // Finish
+                UpdateProgressLabelSafe("«ﬂ „· «·‰”Œ «·«Õ Ì«ÿÌ.");
+                success = true;
             }
-            else
+            catch (Exception ex)
             {
-                progressBar1.Value = value;
+                UpdateProgressLabelSafe($"ÕœÀ Œÿ√ √À‰«¡ «·‰”Œ «·«Õ Ì«ÿÌ: {ex.Message}");
             }
         }
 
-        private void UpdateProgressLabel(string text)
+        private void UpdateProgressLabelSafe(string text)
         {
             if (ProgressLabel.InvokeRequired)
             {
@@ -182,66 +236,16 @@ namespace BbBackup
             }
         }
 
-        private void RunBackup(bool scheduled)
+        private void UpdateProgressSafe(int value)
         {
-            bool success = false;
-            UpdateProgressLabel(""); // Clear progress label before starting
-            try
+            if (progressBar1.InvokeRequired)
             {
-                var config = configService.LoadConfig();
-                if (config.Destinations == null || config.Destinations.Count == 0)
-                {
-                    UpdateProgressLabel("ÌÃ»  ÕœÌœ „Ã·œ«  ··‰”Œ «·«Õ Ì«ÿÌ.");
-                    return;
-                }
-                int steps = 5 + (config.Destinations.Count - 1) + (config.SaveToRemovable ? 1 : 0); // shrink, backup, zip, copy, removable, finish
-                int progress = 0;
-                progressBar1.Maximum = steps;
-                UpdateProgress(progress++); // Start
-                UpdateProgressLabel("»œ¡ «·‰”Œ «·«Õ Ì«ÿÌ...");
-
-                string firstDest = config.Destinations[0];
-                Directory.CreateDirectory(firstDest); // Ensure folder exists
-                string backupFile = $"{config.Database}_{DateTime.Now:yyyyMMddHHmmss}.bak";
-                string backupPath = System.IO.Path.Combine(firstDest, backupFile); // Use first destination for .bak
-
-                UpdateProgressLabel("Ã«—Ì  ﬁ·Ì’ ﬁ«⁄œ… «·»Ì«‰« ...");
-                backupService.ShrinkDatabase(config.Server, config.Database);
-                UpdateProgress(progress++); // After shrink
-
-                UpdateProgressLabel("Ã«—Ì «·‰”Œ «·«Õ Ì«ÿÌ...");
-                backupService.BackupDatabase(config.Server, config.Database, backupPath);
-                UpdateProgress(progress++); // After backup
-
-                UpdateProgressLabel("Ã«—Ì «·÷€ÿ...");
-                string zipPath = backupService.CreateZip(backupPath);
-                UpdateProgress(progress++); // After zip
-
-                // Copy zip to all destinations except the first
-                int maxCopies = config.MaxCopies > 0 ? config.MaxCopies : 7;
-
-                UpdateProgressLabel($"Ã«—Ì «·‰”Œ...");
-                backupService.CopyToDestinations(zipPath, config.Destinations, maxCopies);
-                UpdateProgress(progress++); 
-
-
-                // Removable drive logic
-                if (config.SaveToRemovable)
-                {
-                    UpdateProgressLabel("Ã«—Ì «·‰”Œ ≈·Ï ÊÕœ… Œ«—ÃÌ…...");
-                    backupService.CopyToRemovable(zipPath, maxCopies);
-                    UpdateProgress(progress++); // After removable
-                }
-
-                UpdateProgress(steps); // Finish
-                UpdateProgressLabel("«ﬂ „· «·‰”Œ «·«Õ Ì«ÿÌ.");
-                success = true;
+                progressBar1.Invoke(new Action(() => progressBar1.Value = value));
             }
-            catch (Exception ex)
+            else
             {
-                UpdateProgressLabel($"ÕœÀ Œÿ√ √À‰«¡ «·‰”Œ «·«Õ Ì«ÿÌ: {ex.Message}");
+                progressBar1.Value = value;
             }
-            // No MessageBox.Show for completion or error
         }
 
         private void Form1_Load(object sender, EventArgs e)

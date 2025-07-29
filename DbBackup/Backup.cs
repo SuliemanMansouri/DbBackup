@@ -158,15 +158,17 @@ namespace BbBackup
                 UpdateProgressLabel("»œ¡ «·‰”Œ «·«Õ Ì«ÿÌ...");
 
                 string firstDest = config.Destinations[0];
-                System.IO.Directory.CreateDirectory(firstDest); // Ensure folder exists
+                Directory.CreateDirectory(firstDest); // Ensure folder exists
                 string backupFile = $"{config.Database}_{DateTime.Now:yyyyMMddHHmmss}.bak";
                 string backupPath = System.IO.Path.Combine(firstDest, backupFile); // Use first destination for .bak
 
                 UpdateProgressLabel("Ã«—Ì  ﬁ·Ì’ ﬁ«⁄œ… «·»Ì«‰« ...");
-                // Shrink and backup
-                backupService.BackupDatabase(config.Server, config.Database, backupPath);
-                UpdateProgress(progress++); // After shrink+backup
+                backupService.ShrinkDatabase(config.Server, config.Database);
+                UpdateProgress(progress++); // After shrink
+
                 UpdateProgressLabel("Ã«—Ì «·‰”Œ «·«Õ Ì«ÿÌ...");
+                backupService.BackupDatabase(config.Server, config.Database, backupPath);
+                UpdateProgress(progress++); // After backup
 
                 UpdateProgressLabel("Ã«—Ì «·÷€ÿ...");
                 string zipPath = backupService.CreateZip(backupPath);

@@ -5,6 +5,7 @@ namespace DbBackup
 {
     public interface IBackupService
     {
+        void ShrinkDatabase(string server, string database);
         void BackupDatabase(string server, string database, string backupPath);
         string CreateZip(string backupPath);
         void CopyToDestinations(string zipPath, List<string> destinations);
@@ -13,7 +14,7 @@ namespace DbBackup
 
     public class BackupService : IBackupService
     {
-        public void BackupDatabase(string server, string database, string backupPath)
+        public void ShrinkDatabase(string server, string database)
         {
             string connectionString = $"Server={server};Database=master;Integrated Security=True;TrustServerCertificate=True;";
             string shrinkSql = $"DBCC SHRINKDATABASE([{database}])";
@@ -24,7 +25,16 @@ namespace DbBackup
                 {
                     shrinkCommand.ExecuteNonQuery();
                 }
-                string backupSql = $"BACKUP DATABASE [{database}] TO DISK = N'{backupPath}' WITH INIT, FORMAT";
+            }
+        }
+
+        public void BackupDatabase(string server, string database, string backupPath)
+        {
+            string connectionString = $"Server={server};Database=master;Integrated Security=True;TrustServerCertificate=True;";
+            string backupSql = $"BACKUP DATABASE [{database}] TO DISK = N'{backupPath}' WITH INIT, FORMAT";
+            using (var connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
                 using (var backupCommand = new SqlCommand(backupSql, connection))
                 {
                     backupCommand.ExecuteNonQuery();

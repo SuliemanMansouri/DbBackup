@@ -10,6 +10,21 @@
     <ApplicationIcon>DbBackup.ico</ApplicationIcon>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <PackageId>SM.SqlBackup.WinForms</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Sulieman Mansouri</Authors>
+    <Company>SMSoftware</Company>
+    <Product>SqlBackupUtility</Product>
+    <Description>A Windows Forms utility for automated and manual SQL Server database backups. Supports scheduled tasks, multi-destination backup, compression, removable drive support, and error logging with a user-friendly interface.</Description>
+    <PackageTags>backup;sql;utility</PackageTags>
+    <Copyright>Copyright © 2025 Sulieman Mansouri</Copyright>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <AssemblyName>SqlBackupUtility</AssemblyName>
+  </PropertyGroup>
+
   <ItemGroup>
     <Content Include="DbBackup.ico" />
   </ItemGroup>

@@ -10,6 +10,14 @@ namespace BbBackup
 {
     public partial class Backup : Form
     {
+        private const string Error = "ERR";
+        private const string Warning = "WRN";
+        private const string Info = "INF";
+        private const string Debug = "DBG";
+        private const string Trace = "TRC";
+        private const string Critical = "CRT";
+        private const string Fatal = "FTL";
+
         private NotifyIcon trayIcon;
         private bool allowClose = false;
         private BackupConfig currentConfig;
@@ -25,7 +33,7 @@ namespace BbBackup
         public Backup() : this(
             new ConfigService(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "backupconfig.json")),
             CreateBackupServiceWithLogger())
-            
+
         {
             progressBar1.Maximum = 6; // Set max steps for progress bar
         }
@@ -168,7 +176,7 @@ namespace BbBackup
 
         private void RunBackup(bool scheduled)
         {
-           
+
             UpdateProgressLabelSafe(""); // Clear progress label before starting
             try
             {
@@ -178,7 +186,7 @@ namespace BbBackup
                     UpdateProgressLabelSafe("ÌÃ»  ÕœÌœ „Ã·œ«  ··‰”Œ «·«Õ Ì«ÿÌ.");
                     return;
                 }
-                
+
                 int progress = 0;
                 UpdateProgressSafe(progress++); // Start
                 UpdateProgressLabelSafe("»œ¡ «·‰”Œ «·«Õ Ì«ÿÌ...");
@@ -216,7 +224,7 @@ namespace BbBackup
 
                 UpdateProgressSafe(progress++); // Finish
                 UpdateProgressLabelSafe("«ﬂ „· «·‰”Œ «·«Õ Ì«ÿÌ.");
-               
+
             }
             catch (Exception ex)
             {
@@ -273,16 +281,22 @@ namespace BbBackup
                 int warnCount = 0;
                 if (File.Exists(logFilePath))
                 {
-                    foreach (var line in File.ReadLines(logFilePath))
+                    // Use FileStream with FileShare.ReadWrite to avoid sharing violation
+                    using (var fs = new FileStream(logFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    using (var reader = new StreamReader(fs))
                     {
-                        if (line.Contains("[EXCEPTION]") || line.Contains("[ERROR]")) errorCount++;
-                        if (line.Contains("[WARN]")) warnCount++;
+                        string? line;
+                        while ((line = reader.ReadLine()) != null)
+                        {
+                            if (line.Contains(Error)) errorCount++;
+                            if (line.Contains(Warning)) warnCount++;
+                        }
                     }
                 }
                 errorLogMenuItem.Text = $"«·√Œÿ«¡: {errorCount} | «· Õ–Ì—« : {warnCount}";
                 errorLogMenuItem.Enabled = (errorCount > 0 || warnCount > 0);
             }
-            catch
+            catch (Exception ex)
             {
                 errorLogMenuItem.Text = "”Ã· «·√Œÿ«¡ (Œÿ√)";
                 errorLogMenuItem.Enabled = false;

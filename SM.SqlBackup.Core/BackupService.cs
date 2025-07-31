@@ -24,7 +24,7 @@ namespace SM.SqlBackup.Core
 
         public void ShrinkDatabase(string server, string database)
         {
-            _logger.LogInformation("[INFO] Calling ShrinkDatabase for server: {Server}, database: {Database}", server, database);
+            _logger.LogInformation("Calling ShrinkDatabase for server: {Server}, database: {Database}", server, database);
             try
             {
                 string connectionString = $"Server={server};Database=master;Integrated Security=True;TrustServerCertificate=True;";
@@ -37,18 +37,18 @@ namespace SM.SqlBackup.Core
                         shrinkCommand.ExecuteNonQuery();
                     }
                 }
-                _logger.LogInformation("[SUCCESS] ShrinkDatabase completed for server: {Server}, database: {Database}", server, database);
+                _logger.LogInformation("ShrinkDatabase completed for server: {Server}, database: {Database}", server, database);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "[EXCEPTION] in ShrinkDatabase for server: {Server}, database: {Database}", server, database);
+                _logger.LogError(ex, "in ShrinkDatabase for server: {Server}, database: {Database}", server, database);
                 throw;
             }
         }
 
         public void BackupDatabase(string server, string database, string backupPath)
         {
-            _logger.LogInformation("[INFO] Calling BackupDatabase for server: {Server}, database: {Database}, backupPath: {BackupPath}", server, database, backupPath);
+            _logger.LogInformation("Calling BackupDatabase for server: {Server}, database: {Database}, backupPath: {BackupPath}", server, database, backupPath);
             try
             {
                 string connectionString = $"Server={server};Database=master;Integrated Security=True;TrustServerCertificate=True;";
@@ -61,18 +61,18 @@ namespace SM.SqlBackup.Core
                         backupCommand.ExecuteNonQuery();
                     }
                 }
-                _logger.LogInformation("[SUCCESS] BackupDatabase completed for server: {Server}, database: {Database}, backupPath: {BackupPath}", server, database, backupPath);
+                _logger.LogInformation("BackupDatabase completed for server: {Server}, database: {Database}, backupPath: {BackupPath}", server, database, backupPath);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "[EXCEPTION] in BackupDatabase for server: {Server}, database: {Database}, backupPath: {BackupPath}", server, database, backupPath);
+                _logger.LogError(ex, "in BackupDatabase for server: {Server}, database: {Database}, backupPath: {BackupPath}", server, database, backupPath);
                 throw;
             }
         }
 
         public string CreateZip(string backupPath)
         {
-            _logger.LogInformation("[INFO] Calling CreateZip for backupPath: {BackupPath}", backupPath);
+            _logger.LogInformation("Calling CreateZip for backupPath: {BackupPath}", backupPath);
             try
             {
                 string zipPath = backupPath + ".zip";
@@ -81,23 +81,23 @@ namespace SM.SqlBackup.Core
                     zip.CreateEntryFromFile(backupPath, Path.GetFileName(backupPath));
                 }
                 File.Delete(backupPath);
-                _logger.LogInformation("[SUCCESS] CreateZip completed for backupPath: {BackupPath}", backupPath);
+                _logger.LogInformation("CreateZip completed for backupPath: {BackupPath}", backupPath);
                 return zipPath;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "[EXCEPTION] in CreateZip for backupPath: {BackupPath}", backupPath);
+                _logger.LogError(ex, "Error in CreateZip for backupPath: {BackupPath}", backupPath);
                 throw;
             }
         }
 
         public void CopyToDestinations(string zipPath, List<string> destinations, int maxCopies = 7)
         {
-            _logger.LogInformation("[INFO] Calling CopyToDestinations for zipPath: {ZipPath}, destinations: {Destinations}, maxCopies: {MaxCopies}", zipPath, destinations, maxCopies);
+            _logger.LogInformation("Calling CopyToDestinations for zipPath: {ZipPath}, destinations: {Destinations}, maxCopies: {MaxCopies}", zipPath, destinations, maxCopies);
             if (destinations.Count == 1)
             {
                 var dest = destinations[0];
-                _logger.LogInformation("[INFO] Only one destination specified. Skipping copy for {Dest}", dest);
+                _logger.LogInformation("Only one destination specified. Skipping copy for {Dest}", dest);
                 CleanupOldBackups(dest, Path.GetFileNameWithoutExtension(zipPath), maxCopies);
                 return;
             }
@@ -108,38 +108,38 @@ namespace SM.SqlBackup.Core
                     Directory.CreateDirectory(dest);
                     var destFile = Path.Combine(dest, Path.GetFileName(zipPath));
                     File.Copy(zipPath, destFile, true);
-                    _logger.LogInformation("[SUCCESS] Copied zip to destination: {Dest}", dest);
+                    _logger.LogInformation("Copied zip to destination: {Dest}", dest);
                     // Cleanup old files
                     CleanupOldBackups(dest, Path.GetFileNameWithoutExtension(zipPath), maxCopies);
                 }
                 catch (DirectoryNotFoundException ex)
                 {
-                    _logger.LogWarning(ex, "[EXCEPTION] Destination not found: {Dest}", dest);
+                    _logger.LogError(ex, "Destination not found: {Dest}", dest);
                 }
                 catch (IOException ex)
                 {
-                    _logger.LogWarning(ex, "[EXCEPTION] IO error copying to {Dest}", dest);
+                    _logger.LogError(ex, "IO error copying to {Dest}", dest);
                 }
                 catch (UnauthorizedAccessException ex)
                 {
-                    _logger.LogWarning(ex, "[EXCEPTION] Access denied to {Dest}", dest);
+                    _logger.LogError(ex, "Access denied to {Dest}", dest);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "[EXCEPTION] Unexpected exception copying to {Dest}", dest);
+                    _logger.LogError(ex, "Unexpected exception copying to {Dest}", dest);
                 }
             }
         }
 
         public void CopyToRemovable(string zipPath, int maxCopies = 7)
         {
-            _logger.LogInformation("[INFO] Calling CopyToRemovable for zipPath: {ZipPath}, maxCopies: {MaxCopies}", zipPath, maxCopies);
+            _logger.LogInformation("Calling CopyToRemovable for zipPath: {ZipPath}, maxCopies: {MaxCopies}", zipPath, maxCopies);
             var removables = DriveInfo.GetDrives()
                 .Where(d => d.DriveType == DriveType.Removable && d.IsReady)
                 .ToList();
             if (removables.Count == 0)
             {
-                _logger.LogWarning("[WARN] No removable drives found for backup.");
+                _logger.LogWarning("No removable drives found for backup.");
                 return;
             }
             foreach (var removable in removables)
@@ -148,32 +148,32 @@ namespace SM.SqlBackup.Core
                 try
                 {
                     File.Copy(zipPath, removableDest, true);
-                    _logger.LogInformation("[SUCCESS] Copied zip to removable: {RemovableDest}", removableDest);
+                    _logger.LogInformation("Copied zip to removable: {RemovableDest}", removableDest);
                     // Cleanup old files
                     CleanupOldBackups(removable.RootDirectory.FullName, Path.GetFileNameWithoutExtension(zipPath), maxCopies);
                 }
                 catch (DirectoryNotFoundException ex)
                 {
-                    _logger.LogWarning(ex, "[EXCEPTION] Removable destination not found: {RemovableDest}", removableDest);
+                    _logger.LogError(ex, "Removable destination not found: {RemovableDest}", removableDest);
                 }
                 catch (IOException ex)
                 {
-                    _logger.LogWarning(ex, "[EXCEPTION] IO error copying to removable: {RemovableDest}", removableDest);
+                    _logger.LogError(ex, "IO error copying to removable: {RemovableDest}", removableDest);
                 }
                 catch (UnauthorizedAccessException ex)
                 {
-                    _logger.LogWarning(ex, "[EXCEPTION] Access denied to removable: {RemovableDest}", removableDest);
+                    _logger.LogError(ex, "Access denied to removable: {RemovableDest}", removableDest);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "[EXCEPTION] Unexpected exception copying to removable: {RemovableDest}", removableDest);
+                    _logger.LogError(ex, "Unexpected exception copying to removable: {RemovableDest}", removableDest);
                 }
             }
         }
 
         private void CleanupOldBackups(string directory, string baseName, int maxCopies)
         {
-            _logger.LogInformation("[INFO] Calling CleanupOldBackups for directory: {Directory}, baseName: {BaseName}, maxCopies: {MaxCopies}", directory, baseName, maxCopies);
+            _logger.LogInformation("Calling CleanupOldBackups for directory: {Directory}, baseName: {BaseName}, maxCopies: {MaxCopies}", directory, baseName, maxCopies);
             try
             {
                 var files = Directory.GetFiles(directory, baseName.Split('_')[0] + "_*.zip")
@@ -184,14 +184,14 @@ namespace SM.SqlBackup.Core
                 {
                     foreach (var file in files.Skip(maxCopies))
                     {
-                        _logger.LogInformation("[INFO] Deleting old backup: {File}", file.FullName);
+                        _logger.LogInformation("Deleting old backup: {File}", file.FullName);
                         file.Delete();
                     }
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "[EXCEPTION] Failed to cleanup old backups in {Directory}", directory);
+                _logger.LogError(ex, "Failed to cleanup old backups in {Directory}", directory);
             }
         }
 

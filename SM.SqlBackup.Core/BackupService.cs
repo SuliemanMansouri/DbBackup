@@ -7,6 +7,7 @@ namespace SM.SqlBackup.Core
     public interface IBackupService
     {
         void ShrinkDatabase(string server, string database);
+        void ShrinkDatabaseLog(string server, string database);
         void BackupDatabase(string server, string database, string backupPath);
         string CreateZip(string backupPath);
         void CopyToDestinations(string zipPath, List<string> destinations, int maxCopies = 7);
@@ -69,7 +70,42 @@ namespace SM.SqlBackup.Core
                 throw;
             }
         }
+        public void ShrinkDatabaseLog(string server, string database)
+        {
+            try
+            {
 
+                _logger.LogInformation("Calling Shrink Database Log for server: {Server}, database: {Database}", server, database);
+                // Connect directly to the target database
+                string connectionString = $"Server={server};Database={database};Integrated Security=True;TrustServerCertificate=True;";
+                using var connection = new SqlConnection(connectionString);
+                connection.Open();
+
+                // Get the logical log file name for the current database
+                string getLogFileNameSql = @"
+                                        SELECT name 
+                                        FROM sys.database_files 
+                                        WHERE type_desc = 'LOG'";
+
+                string logFileName;
+                using (var cmd = new SqlCommand(getLogFileNameSql, connection))
+                {
+                    logFileName = (string)cmd.ExecuteScalar();
+                }
+
+                // Shrink the log file (no need for USE statement)
+                string shrinkLogSql = $"DBCC SHRINKFILE([{logFileName}], 1);";
+                using (var cmd = new SqlCommand(shrinkLogSql, connection))
+                {
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "in ShrinkDatabaseLog for Server: {server}, Database: {database}",server, database);
+                throw;
+            }
+        }
         public string CreateZip(string backupPath)
         {
             _logger.LogInformation("Calling CreateZip for backupPath: {BackupPath}", backupPath);
@@ -195,6 +231,6 @@ namespace SM.SqlBackup.Core
             }
         }
 
-       
+
     }
 }

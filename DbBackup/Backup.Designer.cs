@@ -90,7 +90,7 @@
             // 
             AutoScaleDimensions = new SizeF(9F, 21F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(508, 125);
+            ClientSize = new Size(508, 121);
             Controls.Add(tableLayoutPanel1);
             Controls.Add(BackpButton);
             Font = new Font("Segoe UI", 12F);

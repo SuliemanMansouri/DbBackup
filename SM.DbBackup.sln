@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SM.SqlBackup.WinForms", "Db
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SM.SqlBackup.Core", "SM.SqlBackup.Core\SM.SqlBackup.Core.csproj", "{328D7C5A-6FF8-C2E0-DE99-A61B6CE5406B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SM.SqlBackup.WinUI", "SM.SqlBackup.WinUI\SM.SqlBackup.WinUI.csproj", "{2CC60BAF-1DDB-4088-8228-92313D874D58}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,12 @@ Global
 		{328D7C5A-6FF8-C2E0-DE99-A61B6CE5406B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{328D7C5A-6FF8-C2E0-DE99-A61B6CE5406B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{328D7C5A-6FF8-C2E0-DE99-A61B6CE5406B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CC60BAF-1DDB-4088-8228-92313D874D58}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{2CC60BAF-1DDB-4088-8228-92313D874D58}.Debug|Any CPU.Build.0 = Debug|x64
+		{2CC60BAF-1DDB-4088-8228-92313D874D58}.Debug|Any CPU.Deploy.0 = Debug|x64
+		{2CC60BAF-1DDB-4088-8228-92313D874D58}.Release|Any CPU.ActiveCfg = Release|x64
+		{2CC60BAF-1DDB-4088-8228-92313D874D58}.Release|Any CPU.Build.0 = Release|x64
+		{2CC60BAF-1DDB-4088-8228-92313D874D58}.Release|Any CPU.Deploy.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

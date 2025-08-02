@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "SM.SqlBackup.WinUI (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "SM.SqlBackup.WinUI (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

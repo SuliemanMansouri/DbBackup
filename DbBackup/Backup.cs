@@ -2,8 +2,6 @@ using DbBackup;
 using SM.SqlBackup.Core;
 using SM.SqlBackup.WinForms;
 using Microsoft.Extensions.Logging;
-using Serilog;
-using Serilog.Events;
 using System.Threading.Tasks;
 
 namespace BbBackup
@@ -35,29 +33,15 @@ namespace BbBackup
             CreateBackupServiceWithLogger())
 
         {
-            progressBar1.Maximum = 6; // Set max steps for progress bar
+            progressBar1.Maximum = 7; // Set max steps for progress bar
         }
 
         private static IBackupService CreateBackupServiceWithLogger()
         {
-            var logFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "app.log");
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Debug()
-                .WriteTo.File(
-                    logFilePath,
-                    fileSizeLimitBytes: 1048576, // 1 MB
-                    rollOnFileSizeLimit: true,
-                    retainedFileCountLimit: 1, // Only keep the latest file
-                    rollingInterval: RollingInterval.Infinite,
-                    shared: true,
-                    restrictedToMinimumLevel: LogEventLevel.Information,
-                    outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}"
-                )
-                .CreateLogger();
-
+            // Assumes Serilog is already configured in Program.cs
             var loggerFactory = LoggerFactory.Create(builder =>
             {
-                builder.AddSerilog(Log.Logger, dispose: true);
+                builder.AddProvider(new Serilog.Extensions.Logging.SerilogLoggerProvider());
             });
             var logger = loggerFactory.CreateLogger<BackupService>();
             return new BackupService(logger);
@@ -196,6 +180,11 @@ namespace BbBackup
                 string backupFile = $"{config.Database}_{DateTime.Now:yyyyMMddHHmmss}.bak";
                 string backupPath = System.IO.Path.Combine(firstDest, backupFile); // Use first destination for .bak
 
+                UpdateProgressLabelSafe("Ã«—Ì  ﬁ·Ì’ „·› «·”Ã·« ...");
+                backupService.ShrinkDatabaseLog(config.Server, config.Database);
+                UpdateProgressSafe(progress++); // After shrink
+
+
                 UpdateProgressLabelSafe("Ã«—Ì  ﬁ·Ì’ ﬁ«⁄œ… «·»Ì«‰« ...");
                 backupService.ShrinkDatabase(config.Server, config.Database);
                 UpdateProgressSafe(progress++); // After shrink
@@ -300,6 +289,7 @@ namespace BbBackup
             {
                 errorLogMenuItem.Text = "”Ã· «·√Œÿ«¡ (Œÿ√)";
                 errorLogMenuItem.Enabled = false;
+                throw new Exception($" ⁄–—  ﬁ—«¡… ”Ã· «·√Œÿ«¡: {ex.Message}", ex);
             }
         }
 

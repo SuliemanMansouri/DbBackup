@@ -5,10 +5,11 @@ namespace DbBackup
 {
     public partial class Editor : Form
     {
-        private string configPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "backupconfig.json");
-        private BackupConfig config;
+        private string configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "backupconfig.json");
+        // Change the declarations of 'config' and 'lastLoadedConfig' to nullable types to resolve CS8618
+        private BackupConfig? config;
         private bool hasPendingChanges = false;
-        private BackupConfig lastLoadedConfig;
+        private BackupConfig? lastLoadedConfig;
         
 
         public Editor()
@@ -32,9 +33,9 @@ namespace DbBackup
             
         }
 
-        private void BtnLoad_Click(object sender, EventArgs e)
+        private void BtnLoad_Click(object? sender, EventArgs e)
         {
-            if (!System.IO.File.Exists(configPath))
+            if (!File.Exists(configPath))
             {
                 MessageBox.Show("·« ÌÊÃœ „·› ≈⁄œ«œ«  »⁄œ.");
                 return;
@@ -94,7 +95,7 @@ namespace DbBackup
             return false;
         }
 
-        private void BtnSave_Click(object sender, EventArgs e)
+        private void BtnSave_Click(object? sender, EventArgs e)
         {
             if (config == null)
                 config = new BackupConfig();
@@ -113,27 +114,28 @@ namespace DbBackup
             lastLoadedConfig = CloneConfig(config); // Ensure config is up to date for change tracking
         }
 
-        private void BtnAddDestination_Click(object sender, EventArgs e)
+        // Update all event handler signatures to explicitly allow nullable sender
+        private void BtnAddDestination_Click(object? sender, EventArgs e)
         {
             string input = Microsoft.VisualBasic.Interaction.InputBox("√œŒ· „”«— «·„Ã·œ:", "≈÷«›… ÊÃÂ…");
             if (!string.IsNullOrWhiteSpace(input))
                 lstDestinations.Items.Add(input);
         }
 
-        private void BtnRemoveDestination_Click(object sender, EventArgs e)
+        private void BtnRemoveDestination_Click(object? sender, EventArgs e)
         {
             if (lstDestinations.SelectedItem != null)
                 lstDestinations.Items.Remove(lstDestinations.SelectedItem);
         }
 
-        private void BtnAddTime_Click(object sender, EventArgs e)
+        private void BtnAddTime_Click(object? sender, EventArgs e)
         {
             string input = Microsoft.VisualBasic.Interaction.InputBox("√œŒ· «·Êﬁ  (HH:mm):", "≈÷«›… Êﬁ ");
             if (!string.IsNullOrWhiteSpace(input))
                 lstScheduledTimes.Items.Add(input);
         }
 
-        private void BtnRemoveTime_Click(object sender, EventArgs e)
+        private void BtnRemoveTime_Click(object? sender, EventArgs e)
         {
             if (lstScheduledTimes.SelectedItem != null)
                 lstScheduledTimes.Items.Remove(lstScheduledTimes.SelectedItem);
@@ -145,7 +147,7 @@ namespace DbBackup
             this.AutoScaleMode = AutoScaleMode.Dpi;
         }
 
-        private void Editor_Load(object sender, EventArgs e)
+        private void Editor_Load(object? sender, EventArgs e)
         {
             BtnLoad_Click(sender, e);
         }

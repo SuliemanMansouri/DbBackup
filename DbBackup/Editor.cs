@@ -57,6 +57,7 @@ namespace DbBackup
             if (config.ScheduledTimes != null)
                 lstScheduledTimes.Items.AddRange(config.ScheduledTimes.ToArray());
             numMaxCopies.Value = config.MaxCopies > 0 ? config.MaxCopies : 7;
+            ShowConfirmationMessageCheckBox.Checked = config.ShowConfirmationMessage;
             lastLoadedConfig = CloneConfig(config);
             hasPendingChanges = false;
         }
@@ -71,7 +72,8 @@ namespace DbBackup
                 SaveToRemovable = source.SaveToRemovable,
                 UseSchedule = source.UseSchedule,
                 ScheduledTimes = source.ScheduledTimes != null ? new List<string>(source.ScheduledTimes) : new List<string>(),
-                MaxCopies = source.MaxCopies
+                MaxCopies = source.MaxCopies,
+                ShowConfirmationMessage = source.ShowConfirmationMessage
             };
         }
 
@@ -103,6 +105,7 @@ namespace DbBackup
             config.UseSchedule = chkUseSchedule.Checked;
             config.ScheduledTimes = lstScheduledTimes.Items.Cast<string>().ToList();
             config.MaxCopies = (int)numMaxCopies.Value;
+            config.ShowConfirmationMessage = ShowConfirmationMessageCheckBox.Checked;
             var json = JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true });
             System.IO.File.WriteAllText(configPath, json);
             MessageBox.Show(" „ Õ›Ÿ «·≈⁄œ«œ«  »‰Ã«Õ.");

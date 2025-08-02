@@ -214,6 +214,11 @@ namespace BbBackup
                 UpdateProgressSafe(progress++); // Finish
                 UpdateProgressLabelSafe("«ﬂ „· «·‰”Œ «·«Õ Ì«ÿÌ.");
 
+                // Show finish message if enabled
+                if (config.ShowConfirmationMessage)
+                {
+                    MessageBox.Show(" „ «·«‰ Â«¡ „‰ «·‰”Œ «·«Õ Ì«ÿÌ »‰Ã«Õ.", "«ﬂ „«· «·‰”Œ «·«Õ Ì«ÿÌ", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
             }
             catch (Exception ex)
             {

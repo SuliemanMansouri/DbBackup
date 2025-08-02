@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             txtServer = new TextBox();
             txtDatabase = new TextBox();
             lstDestinations = new ListBox();
@@ -51,7 +52,9 @@
             tableLayoutPanel3 = new TableLayoutPanel();
             lblMaxCopies = new Label();
             numMaxCopies = new NumericUpDown();
-            toolTip1 = new ToolTip();
+            toolTip1 = new ToolTip(components);
+            label1 = new Label();
+            ShowConfirmationMessageCheckBox = new CheckBox();
             tableLayoutPanel1.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             tableLayoutPanel3.SuspendLayout();
@@ -65,6 +68,7 @@
             txtServer.RightToLeft = RightToLeft.No;
             txtServer.Size = new Size(200, 23);
             txtServer.TabIndex = 1;
+            toolTip1.SetToolTip(txtServer, "اسم أو عنوان الخادم الذي يستضيف قاعدة البيانات.");
             // 
             // txtDatabase
             // 
@@ -73,6 +77,7 @@
             txtDatabase.RightToLeft = RightToLeft.No;
             txtDatabase.Size = new Size(200, 23);
             txtDatabase.TabIndex = 3;
+            toolTip1.SetToolTip(txtDatabase, "اسم قاعدة البيانات التي سيتم نسخها احتياطيا.");
             // 
             // lstDestinations
             // 
@@ -82,6 +87,7 @@
             lstDestinations.RightToLeft = RightToLeft.No;
             lstDestinations.Size = new Size(200, 94);
             lstDestinations.TabIndex = 5;
+            toolTip1.SetToolTip(lstDestinations, "قائمة المجلدات التي سيتم حفظ النسخ الاحتياطية فيها.");
             // 
             // btnAddDestination
             // 
@@ -90,6 +96,7 @@
             btnAddDestination.Size = new Size(30, 21);
             btnAddDestination.TabIndex = 0;
             btnAddDestination.Text = "+";
+            toolTip1.SetToolTip(btnAddDestination, "إضافة مجلد جديد إلى قائمة الوجهات.");
             // 
             // btnRemoveDestination
             // 
@@ -98,6 +105,7 @@
             btnRemoveDestination.Size = new Size(30, 22);
             btnRemoveDestination.TabIndex = 1;
             btnRemoveDestination.Text = "-";
+            toolTip1.SetToolTip(btnRemoveDestination, "إزالة المجلد المحدد من قائمة الوجهات.");
             // 
             // chkSaveToRemovable
             // 
@@ -105,6 +113,7 @@
             chkSaveToRemovable.Name = "chkSaveToRemovable";
             chkSaveToRemovable.Size = new Size(104, 24);
             chkSaveToRemovable.TabIndex = 8;
+            toolTip1.SetToolTip(chkSaveToRemovable, "حفظ نسخة احتياطية أيضًا على وحدة تخزين خارجية إذا كانت متصلة.");
             // 
             // chkUseSchedule
             // 
@@ -112,6 +121,7 @@
             chkUseSchedule.Name = "chkUseSchedule";
             chkUseSchedule.Size = new Size(104, 24);
             chkUseSchedule.TabIndex = 10;
+            toolTip1.SetToolTip(chkUseSchedule, "تفعيل النسخ الاحتياطي التلقائي في الأوقات المجدولة.");
             // 
             // lstScheduledTimes
             // 
@@ -120,6 +130,7 @@
             lstScheduledTimes.Name = "lstScheduledTimes";
             lstScheduledTimes.Size = new Size(200, 94);
             lstScheduledTimes.TabIndex = 12;
+            toolTip1.SetToolTip(lstScheduledTimes, "الأوقات المجدولة (بتنسيق HH:mm) لتنفيذ النسخ الاحتياطي تلقائيًا.");
             // 
             // btnAddTime
             // 
@@ -128,6 +139,7 @@
             btnAddTime.Size = new Size(30, 23);
             btnAddTime.TabIndex = 1;
             btnAddTime.Text = "+";
+            toolTip1.SetToolTip(btnAddTime, "إضافة وقت جديد إلى جدول النسخ الاحتياطي.");
             // 
             // btnRemoveTime
             // 
@@ -136,22 +148,25 @@
             btnRemoveTime.Size = new Size(30, 23);
             btnRemoveTime.TabIndex = 0;
             btnRemoveTime.Text = "-";
+            toolTip1.SetToolTip(btnRemoveTime, "إزالة الوقت المحدد من جدول النسخ الاحتياطي.");
             // 
             // btnLoad
             // 
-            btnLoad.Location = new Point(306, 350);
+            btnLoad.Location = new Point(306, 370);
             btnLoad.Name = "btnLoad";
             btnLoad.Size = new Size(80, 30);
             btnLoad.TabIndex = 16;
             btnLoad.Text = "فتح";
+            toolTip1.SetToolTip(btnLoad, "تحميل الإعدادات من ملف الإعدادات.");
             // 
             // btnSave
             // 
-            btnSave.Location = new Point(170, 350);
+            btnSave.Location = new Point(170, 370);
             btnSave.Name = "btnSave";
             btnSave.Size = new Size(80, 30);
             btnSave.TabIndex = 17;
             btnSave.Text = "حفظ";
+            toolTip1.SetToolTip(btnSave, "حفظ الإعدادات الحالية إلى ملف الإعدادات.");
             // 
             // lblServer
             // 
@@ -239,14 +254,16 @@
             tableLayoutPanel1.Controls.Add(txtServer, 1, 0);
             tableLayoutPanel1.Controls.Add(tableLayoutPanel2, 2, 2);
             tableLayoutPanel1.Controls.Add(tableLayoutPanel3, 2, 5);
-            tableLayoutPanel1.Controls.Add(btnSave, 1, 7);
-            tableLayoutPanel1.Controls.Add(btnLoad, 0, 7);
             tableLayoutPanel1.Controls.Add(lblMaxCopies, 0, 6);
             tableLayoutPanel1.Controls.Add(numMaxCopies, 1, 6);
+            tableLayoutPanel1.Controls.Add(btnLoad, 0, 8);
+            tableLayoutPanel1.Controls.Add(label1, 0, 7);
+            tableLayoutPanel1.Controls.Add(btnSave, 1, 8);
+            tableLayoutPanel1.Controls.Add(ShowConfirmationMessageCheckBox, 1, 7);
             tableLayoutPanel1.Dock = DockStyle.Fill;
             tableLayoutPanel1.Location = new Point(0, 0);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
-            tableLayoutPanel1.RowCount = 8;
+            tableLayoutPanel1.RowCount = 9;
             tableLayoutPanel1.RowStyles.Add(new RowStyle());
             tableLayoutPanel1.RowStyles.Add(new RowStyle());
             tableLayoutPanel1.RowStyles.Add(new RowStyle());
@@ -255,7 +272,8 @@
             tableLayoutPanel1.RowStyles.Add(new RowStyle());
             tableLayoutPanel1.RowStyles.Add(new RowStyle());
             tableLayoutPanel1.RowStyles.Add(new RowStyle());
-            tableLayoutPanel1.Size = new Size(389, 385);
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
+            tableLayoutPanel1.Size = new Size(389, 417);
             tableLayoutPanel1.TabIndex = 0;
             // 
             // tableLayoutPanel2
@@ -304,13 +322,32 @@
             numMaxCopies.Name = "numMaxCopies";
             numMaxCopies.Size = new Size(120, 23);
             numMaxCopies.TabIndex = 15;
+            toolTip1.SetToolTip(numMaxCopies, "الحد الأقصى لعدد النسخ الاحتياطية التي سيتم الاحتفاظ بها في كل مجلد وجهة.");
             numMaxCopies.Value = new decimal(new int[] { 7, 0, 0, 0 });
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(283, 347);
+            label1.Name = "label1";
+            label1.Size = new Size(103, 15);
+            label1.TabIndex = 18;
+            label1.Text = "إعرض رسالة التأكيد:";
+            // 
+            // ShowConfirmationMessageCheckBox
+            // 
+            ShowConfirmationMessageCheckBox.AutoSize = true;
+            ShowConfirmationMessageCheckBox.Location = new Point(235, 350);
+            ShowConfirmationMessageCheckBox.Name = "ShowConfirmationMessageCheckBox";
+            ShowConfirmationMessageCheckBox.Size = new Size(15, 14);
+            ShowConfirmationMessageCheckBox.TabIndex = 19;
+            ShowConfirmationMessageCheckBox.UseVisualStyleBackColor = true;
             // 
             // Editor
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(389, 385);
+            ClientSize = new Size(389, 417);
             Controls.Add(tableLayoutPanel1);
             Font = new Font("Segoe UI", 9F);
             Name = "Editor";
@@ -325,20 +362,6 @@
             tableLayoutPanel3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)numMaxCopies).EndInit();
             ResumeLayout(false);
-            // ToolTip assignments
-            toolTip1.SetToolTip(txtServer, "اسم أو عنوان الخادم الذي يستضيف قاعدة البيانات.");
-            toolTip1.SetToolTip(txtDatabase, "اسم قاعدة البيانات التي سيتم نسخها احتياطيا.");
-            toolTip1.SetToolTip(lstDestinations, "قائمة المجلدات التي سيتم حفظ النسخ الاحتياطية فيها.");
-            toolTip1.SetToolTip(btnAddDestination, "إضافة مجلد جديد إلى قائمة الوجهات.");
-            toolTip1.SetToolTip(btnRemoveDestination, "إزالة المجلد المحدد من قائمة الوجهات.");
-            toolTip1.SetToolTip(chkSaveToRemovable, "حفظ نسخة احتياطية أيضًا على وحدة تخزين خارجية إذا كانت متصلة.");
-            toolTip1.SetToolTip(chkUseSchedule, "تفعيل النسخ الاحتياطي التلقائي في الأوقات المجدولة.");
-            toolTip1.SetToolTip(lstScheduledTimes, "الأوقات المجدولة (بتنسيق HH:mm) لتنفيذ النسخ الاحتياطي تلقائيًا.");
-            toolTip1.SetToolTip(btnAddTime, "إضافة وقت جديد إلى جدول النسخ الاحتياطي.");
-            toolTip1.SetToolTip(btnRemoveTime, "إزالة الوقت المحدد من جدول النسخ الاحتياطي.");
-            toolTip1.SetToolTip(btnLoad, "تحميل الإعدادات من ملف الإعدادات.");
-            toolTip1.SetToolTip(btnSave, "حفظ الإعدادات الحالية إلى ملف الإعدادات.");
-            toolTip1.SetToolTip(numMaxCopies, "الحد الأقصى لعدد النسخ الاحتياطية التي سيتم الاحتفاظ بها في كل مجلد وجهة.");
         }
 
         #endregion
@@ -367,5 +390,7 @@
         private Label lblMaxCopies;
         private NumericUpDown numMaxCopies;
         private ToolTip toolTip1;
+        private Label label1;
+        private CheckBox ShowConfirmationMessageCheckBox;
     }
 }

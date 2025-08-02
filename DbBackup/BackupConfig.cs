@@ -9,4 +9,5 @@ public class BackupConfig
     public bool UseSchedule { get; set; } // Added property
     public List<string> ScheduledTimes { get; set; } = []; // Added property
     public int MaxCopies { get; set; } = 7; // Maximum number of backup copies
+    public bool ShowConfirmationMessage { get; set; } = false; // Show confirmation before/after backup
 }

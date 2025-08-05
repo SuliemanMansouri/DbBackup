@@ -25,6 +25,7 @@ namespace BbBackup
         private ToolStripMenuItem removableStatusMenuItem;
         private ToolStripMenuItem scheduleStatusMenuItem;
         private ToolStripMenuItem errorLogMenuItem;
+        private ToolStripMenuItem restoreMenuItem;
         private readonly IConfigService configService;
         private readonly IBackupService backupService;
 
@@ -81,8 +82,11 @@ namespace BbBackup
             scheduleStatusMenuItem = new ToolStripMenuItem("«·ÃœÊ·… «· ·ﬁ«∆Ì…") { Enabled = false };
             errorLogMenuItem = new ToolStripMenuItem("”Ã· «·√Œÿ«¡ (0)");
             errorLogMenuItem.Click += ErrorLogMenuItem_Click;
+            restoreMenuItem = new ToolStripMenuItem("«” ⁄«œ… ﬁ«⁄œ… «·»Ì«‰« ...");
+            restoreMenuItem.Click += RestoreMenuItem_Click;
             trayMenu.Items.Add(backupMenuItem);
             trayMenu.Items.Add(settingsMenuItem);
+            trayMenu.Items.Add(restoreMenuItem);
             trayMenu.Items.Add(exitMenuItem);
             trayMenu.Items.Add(new ToolStripSeparator());
             trayMenu.Items.Add(removableStatusMenuItem);
@@ -319,6 +323,29 @@ namespace BbBackup
             catch (Exception ex)
             {
                 MessageBox.Show($" ⁄–— › Õ ”Ã· «·√Œÿ«¡: {ex.Message}");
+            }
+        }
+
+        private void RestoreMenuItem_Click(object? sender, EventArgs e)
+        {
+            try
+            {
+                var config = configService.LoadConfig();
+                using (var ofd = new OpenFileDialog())
+                {
+                    ofd.Filter = "Backup Files (*.bak)|*.bak|All Files (*.*)|*.*";
+                    ofd.Title = "«Œ — „·› «·‰”Œ… «·«Õ Ì«ÿÌ… ·«” ⁄«œ Â«";
+                    if (ofd.ShowDialog() == DialogResult.OK)
+                    {
+                        string backupFile = ofd.FileName;
+                        backupService.RestoreDatabase(config.Server, config.Database, backupFile);
+                        MessageBox.Show(" „  «” ⁄«œ… ﬁ«⁄œ… «·»Ì«‰«  »‰Ã«Õ.", "«” ⁄«œ… ﬁ«⁄œ… «·»Ì«‰« ", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"ÕœÀ Œÿ√ √À‰«¡ «·«” ⁄«œ…: {ex.Message}", "Œÿ√ ›Ì «·«” ⁄«œ…", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

@@ -12,6 +12,7 @@ namespace SM.SqlBackup.Core
         string CreateZip(string backupPath);
         void CopyToDestinations(string zipPath, List<string> destinations, int maxCopies = 7);
         void CopyToRemovable(string zipPath, int maxCopies = 7);
+        void RestoreDatabase(string server, string database, string backupFilePath); // Added restore method
     }
 
     public class BackupService : IBackupService
@@ -204,6 +205,40 @@ namespace SM.SqlBackup.Core
                 {
                     _logger.LogError(ex, "Unexpected exception copying to removable: {RemovableDest}", removableDest);
                 }
+            }
+        }
+
+        public void RestoreDatabase(string server, string database, string backupFilePath)
+        {
+            _logger.LogInformation("Calling RestoreDatabase for server: {Server}, database: {Database}, backupFilePath: {BackupFilePath}", server, database, backupFilePath);
+            try
+            {
+                string connectionString = $"Server={server};Database=master;Integrated Security=True;TrustServerCertificate=True;";
+                string setSingleUser = $"ALTER DATABASE [{database}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;";
+                string restoreSql = $"RESTORE DATABASE [{database}] FROM DISK = N'{backupFilePath}' WITH REPLACE;";
+                string setMultiUser = $"ALTER DATABASE [{database}] SET MULTI_USER;";
+                using (var connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    using (var cmd = new SqlCommand(setSingleUser, connection))
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+                    using (var cmd = new SqlCommand(restoreSql, connection))
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+                    using (var cmd = new SqlCommand(setMultiUser, connection))
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                _logger.LogInformation("RestoreDatabase completed for server: {Server}, database: {Database}, backupFilePath: {BackupFilePath}", server, database, backupFilePath);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in RestoreDatabase for server: {Server}, database: {Database}, backupFilePath: {BackupFilePath}", server, database, backupFilePath);
+                throw;
             }
         }
 
